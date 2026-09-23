@@ -34,10 +34,19 @@ def main() -> None:
     timestamps_file = DATA_DIR / "commit_timestamps.csv"
     if timestamps_file.exists():
         ts = pd.read_csv(timestamps_file, parse_dates=["committed_at"])
-        peak_hour = ts["committed_at"].dt.hour.value_counts().idxmax()
+        ts["local_time"] = ts["committed_at"] + pd.Timedelta(hours=5)  # Astana, UTC+5
+        peak_local_hour = ts["local_time"].dt.hour.value_counts().idxmax()
+        main_day = ts["local_time"].dt.date.value_counts().idxmax()
+        main_day_count = int(ts["local_time"].dt.date.value_counts().max())
+        in_window = ts["local_time"].dt.hour.between(13, 18).sum()
         print()
         print("-- Commit timing --")
         print(f"Commits analyzed: {len(ts)} across {ts['name'].nunique()} repos")
+        print(f"Main event day (Astana local): {main_day} "
+              f"({main_day_count/len(ts)*100:.1f}% of all commits)")
+        print(f"Peak commit hour (Astana local, UTC+5): {peak_local_hour}:00")
+        print(f"Commits within 13:00-18:00 local event window: {in_window} "
+              f"({in_window/len(ts)*100:.1f}% of all commits)")
         print(f"Peak commit hour (UTC): {peak_hour}:00")
         print(f"Window: {ts['committed_at'].min()} -> {ts['committed_at'].max()}")
 
