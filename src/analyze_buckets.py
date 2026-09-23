@@ -102,8 +102,39 @@ def main() -> None:
     plt.setp(ax.get_xticklabels(), rotation=25, ha="right")
     save(fig, str(CHART_FILE))
 
+    # --- Second chart: zoom into active teams only (drop the dominant
+    # "template only" bar so the real distribution is legible) ---
+    active_summary = summary[summary["bucket"] != "1 (template only)"].copy()
+    active_summary["pct_of_active"] = (
+        active_summary["repo_count"] / active_total * 100
+    ).round(2)
+
+    fig2, ax2 = new_square_figure(
+        title="Hackalemai Astana — Active Teams Only",
+        subtitle=f"{active_total} teams with real commits, by commit-count range",
+    )
+    bars2 = ax2.bar(
+        active_summary["bucket"].astype(str),
+        active_summary["repo_count"],
+        color=PALETTE[1: len(active_summary) + 1],
+        edgecolor="none",
+    )
+    for bar, pct in zip(bars2, active_summary["pct_of_active"]):
+        height = bar.get_height()
+        ax2.text(
+            bar.get_x() + bar.get_width() / 2,
+            height + active_summary["repo_count"].max() * 0.02,
+            f"{int(height)}\n({pct:.1f}%)",
+            ha="center",
+            va="bottom",
+            fontsize=12,
+            color="#F5F5F7",
+        )
+    ax2.set_ylabel("Number of repos")
+    ax2.set_xlabel("Commits per repo")
+    plt.setp(ax2.get_xticklabels(), rotation=25, ha="right")
+    save(fig2, str(CHARTS_DIR / "commit_buckets_active_only.png"))
+
 
 if __name__ == "__main__":
-    import matplotlib.pyplot as plt  # noqa: E402  (needed for setp above)
-
     main()
