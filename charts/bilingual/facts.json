@@ -1,9 +1,9 @@
 {
   "repos_total": 3649,
-  "repos_zero_commits": 2383,
-  "repos_any_commit": 1266,
+  "repos_zero_commits": 2395,
+  "repos_any_commit": 1254,
   "repos_commit_in_window": 1057,
-  "repos_commits_only_outside_window": 209,
+  "repos_commits_only_outside_window": 197,
   "repos_matched_to_case": 984,
   "repos_case_unclear": 73,
   "case_counts": {
@@ -21,9 +21,10 @@
     "12": 115
   },
   "case_label_fixes": 7,
+  "template_commit_fixes": 16,
   "commit_levels_all_repos": {
-    "0": 2383,
-    "1–5": 279,
+    "0": 2395,
+    "1–5": 267,
     "6–10": 183,
     "11–20": 289,
     "21–50": 364,

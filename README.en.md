@@ -1,26 +1,27 @@
-<p align="center"><a href="README.md">🇰🇿 Қазақша</a> · <b>🇬🇧 English</b></p>
+<p align="center"><a href="README.md">🇰🇿 Қазақша</a> · <a href="README.ru.md">🇷🇺 Русский</a> · <b>🇬🇧 English</b></p>
 
 # HackAlem AI 2026: what 3,649 team repos tell us
 
 **Author:** Dr. Talgar Bayan · **Date:** 24 September 2026 · **Data:** public GitHub repos of the [BAITC-Hacks](https://github.com/BAITC-Hacks) organisation
 
-> **Disclaimer.** All data comes from public GitHub repositories. No personal data of participants was analysed, and none is published in this repo: it holds only aggregate numbers and charts. These are not the official results of the hackathon. Details: [section 7](#7-disclaimer).
+> **Disclaimer.** All data comes from public GitHub repositories. No personal data of participants was analysed, and none is published here. These are not the official results of the hackathon. Details: [section 7](#7-disclaimer).
 
 ## Summary
 
+- More than 6,000 people registered (6,586 applications) and 2,500 took part. There were 12 tracks.
 - Every registered team got an auto-created GitHub repo: **3,649 repos** in total.
-- **2,383 repos (65.3%) are empty:** they have no team commits at all.
+- **2,395 repos (65.6%) are empty:** they have no team commits at all.
 - **1,057 repos (29.0%)** have commits during the event (13:00–18:00).
 - The busiest hour was the last one: **7,867 commits between 17:00 and 18:00**. Activity stopped sharply at 18:00.
 - **79%** of the teams that committed during the event did so in at least four of the five hours.
-- The most chosen of the 12 cases was **AI Sana's education case (145 teams)**; the least chosen was **Halyk Bank's "Voice Router" (29)**.
+- The most chosen track was **AI Sana, education (145 teams)**; the least chosen was **Halyk Bank, "Voice Router" (29)**.
 
 ## Contents
 
 1. [About the hackathon](#1-about-the-hackathon)
 2. [Repos and commits](#2-repos-and-commits)
 3. [Timing and working rhythm](#3-timing-and-working-rhythm)
-4. [The 12 cases](#4-the-12-cases)
+4. [The 12 tracks](#4-the-12-tracks)
 5. [Method](#5-method)
 6. [Limitations](#6-limitations)
 7. [Disclaimer](#7-disclaimer)
@@ -31,8 +32,10 @@
 ## 1. About the hackathon
 
 - **When and where:** 23 September 2026, Astana, in person. Coding window: 13:00–18:00 (five hours).
+- **Participants:** more than 6,000 registrations (6,586 applications), 2,500 seats, participants from 21 countries.
 - **Teams:** up to three people; solo entries were allowed. Using Codex during development was required.
-- **Seats:** 6,586 applications for 2,500 seats. There were long queues at the entrance, and some registered people could not get in, which the organisers acknowledged.
+- **Prizes:** $1.1 million in prizes and technology resources. Partners included OpenAI and NVIDIA.
+- **Entrance:** there were long queues, and some registered people could not get in, which the organisers acknowledged.
 - **Results:** judging 24–28 September, Demo Day 29 September, awards 1 October.
 - **GitHub:** every registered team got an auto-created repo named `hack-<id>-<team-name>` in the BAITC-Hacks organisation. After 18:00 the repos were archived (read-only).
 
@@ -42,7 +45,7 @@
 
 ![How many of the 3,649 team repos actually got code?](charts/bilingual/01_funnel.png)
 
-2,383 of the 3,649 repos (65.3%) have no team commits at all. 1,266 have at least one commit. 1,057 (29.0%) have commits during the event (13:00–18:00). Another 209 have commits, but those were made before the event started. Of the repos with event-time commits, 984 (93.1%) were matched to one of the 12 cases.
+2,395 of the 3,649 repos (65.6%) have no team commits at all. 1,254 (34.4%) have at least one commit. 1,057 (29.0%) have commits during the event (13:00–18:00). Another 197 have commits, but those were made before the event started. Of the repos with event-time commits, 984 (93.1%) were matched to one of the 12 tracks.
 
 **An empty repo does not mean a lazy team.** There were 2,500 seats for 6,586 applications, and some people queued and never got in. Some teams appear to have registered more than once: 225 team names appear on more than one repo. The data cannot tell these reasons apart.
 
@@ -66,13 +69,13 @@ Commits rose quickly after 13:00, stayed high through the afternoon, and peaked 
 
 Of the 1,057 repos with commits during 13:00–18:00, 470 (44.5%) committed in every one of the five hours and 837 (79.2%) in at least four. At least 996 (94.2%) committed in the final hour (17:00–18:00). Most teams that started working kept going to the end.
 
-## 4. The 12 cases
+## 4. The 12 tracks
 
-### 4.1. What were the cases?
+### 4.1. What were the tracks?
 
-![The 12 cases: what did teams build?](charts/bilingual/05_cases_explained.png)
+![The 12 tracks: what did teams build?](charts/bilingual/05_cases_explained.png)
 
-| No. | Sector | Partner | Task | Teams |
+| No. | Track | Partner | Task | Teams |
 |---|---|---|---|---:|
 | 01 | Energy | Samruk-Kazyna | Agentic AI that forecasts wind-farm power output from weather data | 74 |
 | 02 | Finance | Freedom | "Money Graph": rebuild an organised group from a transaction network (AML) | 115 |
@@ -87,28 +90,29 @@ Of the 1,057 repos with commits during 13:00–18:00, 470 (44.5%) committed in e
 | 11 | Special track | Kazakhtelecom | Agent comparing org-structure documents before and after a reorganisation | 42 |
 | 12 | Special track | Astana Innovations | "Akim for 5 hours": city simulator splitting a budget over 5 areas and districts | 115 |
 
-### 4.2. Which cases did teams choose?
+### 4.2. Which tracks did teams choose?
 
-![Which cases did teams choose?](charts/bilingual/06_cases_ranked.png)
+![Which tracks did teams choose?](charts/bilingual/06_cases_ranked.png)
 
-The most chosen case was AI Sana's education challenge hub (145 teams), followed by Freedom's "Money Graph" and "Akim for 5 hours" (115 each) and Firebird's contractor matching (113). The least chosen was Halyk Bank's "Voice Router" (29). Another 73 repos with event-time commits could not be matched to a case.
+The most chosen track was AI Sana's education challenge hub (145 teams), followed by Freedom's "Money Graph" and "Akim for 5 hours" (115 each) and Firebird's contractor matching (113). The least chosen was Halyk Bank's "Voice Router" (29). Another 73 repos with event-time commits could not be matched to a track.
 
 ## 5. Method
 
 1. **Repos.** The list of all repos in the BAITC-Hacks organisation came from the GitHub REST API: 3,649 repos, all archived (`src/fetch_repos.py`). Data was collected on the night of 24 September 2026.
 2. **Commits.** Commit counts on each repo's main branch (`src/fetch_commit_counts.py`) and commit times (`src/fetch_commit_timings.py`, at most 300 commits per repo) came from GitHub GraphQL.
 3. **READMEs.** 3,644 READMEs were downloaded from raw.githubusercontent.com (`src/fetch_readmes.py`); 5 repos have none.
-4. **Per-repo table.** `hackalem_repos_analysis.csv` holds, for each repo: team commits (all branches, excluding the auto-created first commit), commits during 13:00–18:00, the number of event hours with commits, and a case label. It was built separately; the script that produced it is not in this repo yet. We checked it against the API data: for 991 of the 1,057 active repos, the hours-with-commits value matches our own count from the main branch exactly; for the rest the table's value is higher, consistent with commits on other branches.
-5. **Cases.** We compared the case labels with the README texts using keywords, read the disagreements by hand, and corrected 7 wrong labels (`CASE_FIXES` in `src/plot_bilingual_charts.py`).
-6. **Time.** All times are Astana time (UTC+5).
-7. **Numbers.** Every number in the charts and in this README is computed by `src/plot_bilingual_charts.py` and written to `charts/bilingual/facts.json`.
+4. **Per-repo table.** `hackalem_repos_analysis.csv` holds, for each repo: team commits (all branches, excluding the auto-created first commit), commits during 13:00–18:00, the number of event hours with commits, and a track label. It was built separately; the script that produced it is not in this repo yet. We checked it against the API data: for 991 of the 1,057 active repos, the hours-with-commits value matches our own count from the main branch exactly; for the rest the table's value is higher, consistent with commits on other branches.
+5. **Corrections.** We compared the track labels with the README texts using keywords, read the disagreements by hand, and corrected 7 wrong labels (`CASE_FIXES`). In 16 early test repos created in June–July, the auto-created first commit came from a second organiser account, so the table had counted it as a team commit; we checked these on GitHub and corrected them (`TEMPLATE_COUNTED_AS_TEAM`). Both corrections live in `src/plot_bilingual_charts.py`.
+6. **Checks.** Every number in the charts was recomputed with separate code and matched. A sample of 25 repos was compared with live GitHub: repo count, archive state and main-branch commit counts all match.
+7. **Time.** All times are Astana time (UTC+5).
+8. **Numbers.** Every number in the charts and in this README is computed by `src/plot_bilingual_charts.py` and written to `charts/bilingual/facts.json`.
 
 ## 6. Limitations
 
 - One repo is one registration (a team), not a person. Teams had up to three members, so head-counts can't be derived from this data.
 - The data can't say why a repo is empty: the team may not have come, may not have got in, may have registered twice, or may have coded elsewhere.
 - Commit count measures neither quality nor effort.
-- The case labels of 19 repos whose README is still the auto-generated template were not checked.
+- The track labels of 19 repos whose README is still the auto-generated template were not checked.
 - The timeline uses main branches only; two repos have more than 300 commits and the excess is not plotted.
 
 ## 7. Disclaimer
@@ -135,11 +139,12 @@ python plot_bilingual_charts.py   # charts/bilingual/*.png + facts.json
 
 ## 9. Sources
 
-- [hackalem.ai](https://hackalem.ai/): format, 2,500 seats, teams of up to three, Codex required
-- [The Astana Times](https://astanatimes.com/2026/09/astana-stages-massive-ai-hackathon-in-guinness-world-records-bid/): 6,000+ registrations, five hours
-- [Qumash.kz](https://qumash.kz/news/pyat-chasov-v-ocheredi-uchastniki-hackalem-ai-v-astane-pozhalovalis-na-organizatsiyu/): 6,586 applications, entrance queue
-- [Ulys Media](https://ulysmedia.kz/news/81431-simuliator-vyzhivaniia-uchastniki-raskritikovali-hackalem-ai-v-astane/): participants' complaints and the organisers' response
-- [github.com/BAITC-Hacks](https://github.com/BAITC-Hacks): the team repos
+- [hackalem.ai](https://hackalem.ai/) — the official site: date, format, 2,500 seats, teams of up to three, Codex required, $1.1M in prizes and resources
+- [Kazinform](https://www.inform.kz/ru/chto-sozdayut-za-pyat-chasov-kak-prohodit-krupneyshiy-ai-hakaton-v-astane-72e380f9) — 2,500 participants, 21 countries, partners
+- [The Astana Times](https://astanatimes.com/2026/09/astana-stages-massive-ai-hackathon-in-guinness-world-records-bid/) — 6,000+ registrations, five hours, Guinness World Records attempt
+- [Qumash.kz](https://qumash.kz/news/pyat-chasov-v-ocheredi-uchastniki-hackalem-ai-v-astane-pozhalovalis-na-organizatsiyu/) — 6,586 applications, entrance queue
+- [Ulys Media](https://ulysmedia.kz/news/81431-simuliator-vyzhivaniia-uchastniki-raskritikovali-hackalem-ai-v-astane/) — participants' complaints and the organisers' response
+- [github.com/BAITC-Hacks](https://github.com/BAITC-Hacks) — the team repos
 
 ## 10. Author
 

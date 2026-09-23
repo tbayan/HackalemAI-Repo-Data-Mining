@@ -5,7 +5,8 @@ both languages, and each page carries the author credit as its footer. Every
 number drawn here is computed from data/ at run time and also written to
 charts/bilingual/facts.json, so the README and the post can be checked
 against it. The only hand-written inputs are the short case descriptions
-(CASES) and seven case-label corrections (CASE_FIXES).
+(CASES), seven case-label corrections (CASE_FIXES) and sixteen repos whose
+auto-created first commit was counted as a team commit (TEMPLATE_COUNTED_AS_TEAM).
 
 Inputs:
   data/hackalem_repos_analysis.csv  per-repo commits (all branches) + case_guess
@@ -56,7 +57,7 @@ AUTHOR = "Dr. Talgar Bayan"
 REPO_URL = "github.com/tbayan/HackalemAI-Repo-Data-Mining"
 DATA_LINE = "Дерек / Data: github.com/BAITC-Hacks — ашық реполар / public repos"
 
-# --- the 12 official cases ----------------------------------------------------
+# --- the 12 official tracks (one case each) ---------------------------------
 # (code, sector_kk, sector_en, partner_kk, partner_en, bar_kk, bar_en, task_kk, task_en)
 CASES = [
     ("01", "Энергетика", "Energy", "Самұрық-Қазына", "Samruk-Kazyna",
@@ -119,6 +120,19 @@ CASE_FIXES = {
     "hack-aa88eec9-irtida": ("09", "03"),  # Career Quest, Halyk Bank track
     "hack-8e42af59-rdm-code": ("05", "07"),  # Alem Practice, track "Образование"
     "hack-a791087a-winx": ("04", "12"),  # 100-unit budget over 5 Astana districts
+}
+
+# Sixteen early test repos (created June-July 2026) whose auto-created
+# "Initial commit" came from a second organiser account, so the per-repo table
+# counted it as a team commit. Found by checking every repo whose team-commit
+# count was >= its main-branch count against GitHub on 2026-09-24.
+TEMPLATE_COUNTED_AS_TEAM = {
+    "hack-1e4a21e0-best", "hack-2a974643-nova-team", "hack-36367827-ai-test",
+    "hack-864ae639-team", "hack-9feddb8a-123", "hack-a9622ebb-e2e-team-x",
+    "hack-b04670c6-moshimoshi", "hack-b317d792-alinur", "hack-b9ed0f02-nurik",
+    "hack-baf2c744-e2e-team-1783661954", "hack-bc128bc1-nurik-2", "hack-c05f1da7-yonro",
+    "hack-cb541497-qwe", "hack-d3060b84-asd", "hack-e780510c-yonro",
+    "hack-f2dc3c28-technokod",
 }
 
 
@@ -236,6 +250,11 @@ def load() -> tuple[pd.DataFrame, pd.DataFrame]:
         row = repos["repo"] == repo
         assert repos.loc[row, "case"].eq(old).all() and row.any(), f"unexpected label for {repo}"
         repos.loc[row, "case"] = new
+    template = repos["repo"].isin(TEMPLATE_COUNTED_AS_TEAM)
+    assert template.sum() == len(TEMPLATE_COUNTED_AS_TEAM)
+    assert (repos.loc[template, "participant_commits"] >= 1).all()
+    assert (repos.loc[template, "commits_13_18_local"] == 0).all()
+    repos.loc[template, "participant_commits"] -= 1
 
     ts = pd.read_csv(DATA_DIR / "commit_timestamps.csv", parse_dates=["committed_at"])
     ts["local"] = ts["committed_at"].dt.tz_convert(ASTANA)
@@ -280,6 +299,7 @@ def compute_facts(repos: pd.DataFrame, ts: pd.DataFrame) -> dict:
         "repos_case_unclear": len(in_window) - len(matched),
         "case_counts": {c: int(case_counts.get(c, 0)) for c, *_ in CASES},
         "case_label_fixes": len(CASE_FIXES),
+        "template_commit_fixes": len(TEMPLATE_COUNTED_AS_TEAM),
         "commit_levels_all_repos": {k: int(v) for k, v in levels.items()},
         "median_commits_repos_with_any": float(
             repos.loc[repos["participant_commits"] > 0, "participant_commits"].median()),
@@ -312,7 +332,7 @@ def chart_funnel(f: dict) -> None:
     zero = f["repos_zero_commits"]
     cap_top = p.footer()
     stages = [
-        (total, "Автоматты ашылған репо", "Repos auto-created at registration", None),
+        (total, "Автоматты ашылған репо", "Auto-created team repos", None),
         (f["repos_any_commit"], "Кемінде 1 коммит бар", "At least one team commit",
          (zero, f"0 коммит / 0 commits: {n(zero)} ({pct(zero, total)})")),
         (f["repos_commit_in_window"], "Жарыс уақытында коммит (13:00–18:00)",
@@ -320,9 +340,9 @@ def chart_funnel(f: dict) -> None:
          (f["repos_commits_only_outside_window"],
           f"–{n(f['repos_commits_only_outside_window'])}: коммит тек басқа уақытта / "
           f"only at other times")),
-        (f["repos_matched_to_case"], "12 кейстің біріне сәйкестендірілді",
-         "Matched to one of the 12 cases",
-         (f["repos_case_unclear"], f"–{f['repos_case_unclear']}: кейсі анық емес / case unclear")),
+        (f["repos_matched_to_case"], "12 тректің біріне сәйкестендірілді",
+         "Matched to one of the 12 tracks",
+         (f["repos_case_unclear"], f"–{f['repos_case_unclear']}: трегі анық емес / track unclear")),
     ]
     top, bottom = p.header_bottom - 0.03, cap_top + 0.03
     row_h = (top - bottom) / len(stages)
@@ -454,7 +474,7 @@ def chart_hours_active(f: dict) -> None:
 
 
 def chart_cases_explained(f: dict) -> None:
-    p = Page(5, "12 кейс: командалар не құрастырды?", "The 12 cases: what did teams build?")
+    p = Page(5, "12 трек: командалар не құрастырды?", "The 12 tracks: what did teams build?")
     cap_top = p.footer(note="Сипаттамалар командалардың README-лері бойынша қысқартылды / "
                          "Short descriptions summarised from team READMEs")
     top, bottom = p.header_bottom - 0.016, cap_top + 0.004
@@ -491,9 +511,9 @@ def chart_cases_explained(f: dict) -> None:
 def chart_cases_ranked(f: dict) -> None:
     counts = f["case_counts"]
     unclear = f["repos_case_unclear"]
-    p = Page(6, "Қай кейсті көбірек таңдады?", "Which cases did teams choose?")
+    p = Page(6, "Қай тректі көбірек таңдады?", "Which tracks did teams choose?")
     ranked = sorted(CASES, key=lambda c: counts[c[0]], reverse=True)
-    cap_top = p.footer(note=f"Тағы {unclear} репоның кейсі анық емес / {unclear} more repos: case unclear · "
+    cap_top = p.footer(note=f"Тағы {unclear} репоның трегі анық емес / {unclear} more repos: track unclear · "
                          f"{f['case_label_fixes']} белгі қолмен түзетілді / labels corrected by hand")
     top, bottom = p.header_bottom - 0.02, cap_top + 0.015
     row_h = (top - bottom) / len(ranked)
