@@ -1,4 +1,9 @@
-"""Shared chart styling for Instagram/Threads-ready square PNG exports."""
+"""Shared chart styling for Instagram/Threads-ready square PNG exports.
+
+Light, academic/professional theme: white background, muted "seaborn deep"
+style palette, charcoal text — legible and print-friendly rather than
+neon/dark.
+"""
 from __future__ import annotations
 
 import matplotlib.pyplot as plt
@@ -8,18 +13,20 @@ import seaborn as sns
 FIGSIZE_INCHES = (10.8, 10.8)
 DPI = 100  # 10.8in * 100dpi = 1080px square
 
-PALETTE = ["#6C63FF", "#FF6584", "#43D9AD", "#FFB347", "#4EA5D9", "#FF5C5C",
-           "#8CD867", "#B983FF", "#FFD93D", "#3AAFA9"]
+PALETTE = ["#4C72B0", "#55A868", "#C44E52", "#8172B2", "#CCB974", "#64B5CD",
+           "#937860", "#DA8BC3", "#8C8C8C", "#B0B0B0"]
 
-BG_COLOR = "#0F1220"
-FG_COLOR = "#F5F5F7"
-GRID_COLOR = "#33344A"
+BG_COLOR = "#FFFFFF"
+FG_COLOR = "#222222"
+GRID_COLOR = "#DDDDDD"
+SUBTITLE_COLOR = "#5A5A5A"
 
 
 def new_square_figure(title: str, subtitle: str | None = None):
-    """Create a styled 1080x1080 figure/axes pair, dark themed for social media."""
+    """Create a styled 1080x1080 figure/axes pair, light themed for print/social."""
     plt.rcParams.update({
         "font.size": 16,
+        "font.family": "sans-serif",
         "text.color": FG_COLOR,
         "axes.labelcolor": FG_COLOR,
         "xtick.color": FG_COLOR,
@@ -28,13 +35,13 @@ def new_square_figure(title: str, subtitle: str | None = None):
     fig, ax = plt.subplots(figsize=FIGSIZE_INCHES, dpi=DPI)
     fig.patch.set_facecolor(BG_COLOR)
     ax.set_facecolor(BG_COLOR)
-    ax.grid(axis="y", color=GRID_COLOR, linewidth=0.8, alpha=0.6)
+    ax.grid(axis="y", color=GRID_COLOR, linewidth=0.8, alpha=0.9)
     ax.set_axisbelow(True)
     for spine in ax.spines.values():
         spine.set_visible(False)
     fig.suptitle(title, fontsize=26, fontweight="bold", color=FG_COLOR, y=0.97)
     if subtitle:
-        ax.set_title(subtitle, fontsize=15, color="#B4B6C9", pad=16)
+        ax.set_title(subtitle, fontsize=15, color=SUBTITLE_COLOR, pad=16)
     return fig, ax
 
 

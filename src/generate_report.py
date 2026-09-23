@@ -45,8 +45,25 @@ def main() -> None:
     if tracks_file.exists():
         tracks = pd.read_csv(tracks_file)
         print()
-        print("-- Top tracks/clusters --")
+        print("-- Top tracks/clusters (from README text-mining) --")
         print(tracks.head(10).to_string(index=False))
+
+    official_file = DATA_DIR / "official_tracks_summary.csv"
+    if official_file.exists():
+        official = pd.read_csv(official_file)
+        print()
+        print("-- Official tracks (verified via per-repo commit-timing match) --")
+        print(official[["track", "partner", "repo_count"]].to_string(index=False))
+
+    repo_analysis_file = DATA_DIR / "hackalem_repos_analysis.csv"
+    if repo_analysis_file.exists():
+        analysis = pd.read_csv(repo_analysis_file)
+        matched = analysis["case_guess"].str.match(r"^\d{2}\b").sum()
+        print()
+        print("-- Event-window participation (from commit-timing analysis) --")
+        print(f"Matched to one of the 12 official tracks: {matched}")
+        print(analysis.loc[~analysis["case_guess"].str.match(r"^\d{2}\b"),
+                            "case_guess"].value_counts().to_string())
 
     print("=" * 60)
 

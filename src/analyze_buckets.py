@@ -11,7 +11,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import pandas as pd
 
-from plotting import PALETTE, new_square_figure, save
+from plotting import FG_COLOR, PALETTE, new_square_figure, save
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 CHARTS_DIR = Path(__file__).resolve().parent.parent / "charts"
@@ -95,7 +95,7 @@ def main() -> None:
             ha="center",
             va="bottom",
             fontsize=11,
-            color="#F5F5F7",
+            color=FG_COLOR,
         )
     ax.set_ylabel("Number of repos")
     ax.set_xlabel("Commits per repo")
@@ -128,7 +128,7 @@ def main() -> None:
             ha="center",
             va="bottom",
             fontsize=12,
-            color="#F5F5F7",
+            color=FG_COLOR,
         )
     ax2.set_ylabel("Number of repos")
     ax2.set_xlabel("Commits per repo")

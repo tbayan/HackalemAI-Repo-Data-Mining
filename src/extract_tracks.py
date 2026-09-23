@@ -27,6 +27,15 @@ CHART_FILE = CHART_DIR / "tracks_distribution.png"
 
 N_CLUSTERS = 10
 
+# The org auto-generates this exact placeholder README for every repo created
+# via its bootstrap tooling; teams that never touched the README still have
+# this text and only this text. It carries zero signal about the team's
+# actual hackathon track, so it must be filtered out before clustering.
+BOILERPLATE_PATTERN = re.compile(
+    r"^#\s*hack-[0-9a-f]{8}-\S+\s*\n+Hackathon team repository for",
+    re.IGNORECASE,
+)
+
 # Matches lines like "Track: Fintech", "## Challenge - Health", "Topic: XYZ"
 TRACK_PATTERN = re.compile(
     r"(?:^|\n)\s*#{0,3}\s*(?:\*\*)?(track|challenge|topic|nomination|track name)"
@@ -34,23 +43,63 @@ TRACK_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
+# The org's actual convention (observed in the corpus) labels tracks as
+# Russian "кейс №N" ("case #N"), often followed by a quoted title in
+# guillemets, e.g. 'Кейс №3 «Граф денег»'.
+CASE_PATTERN = re.compile(
+    r"кейс\s*№\s*0*(\d+)[^\n«]{0,10}(?:«([^»]{2,60})»)?",
+    re.IGNORECASE,
+)
+
 CUSTOM_STOPWORDS = {
     "hackathon", "team", "project", "repo", "repository", "readme", "hack",
     "baitc", "hacks", "astana", "2026", "code", "codebase", "solution",
 }
-STOP_WORDS = list(ENGLISH_STOP_WORDS | CUSTOM_STOPWORDS)
+# Most real README content in this corpus is written in Russian, so the
+# English-only stopword list left words like "не"/"на"/"для" dominating
+# every cluster's top terms. Add the standard Russian function-word list.
+RUSSIAN_STOPWORDS = {
+    "и", "в", "во", "не", "что", "он", "на", "я", "с", "со", "как", "а", "то",
+    "все", "она", "так", "его", "но", "да", "ты", "к", "у", "же", "вы", "за",
+    "бы", "по", "только", "ее", "её", "мне", "было", "вот", "от", "меня",
+    "еще", "ещё", "нет", "о", "из", "ему", "теперь", "когда", "даже", "ну",
+    "вдруг", "ли", "если", "уже", "или", "ни", "быть", "был", "него", "до",
+    "вас", "нибудь", "опять", "уж", "вам", "ведь", "там", "потом", "себя",
+    "ничего", "ей", "может", "они", "тут", "где", "есть", "надо", "ней",
+    "для", "мы", "тебя", "их", "чем", "была", "сам", "чтоб", "без", "будто",
+    "чего", "раз", "тоже", "себе", "под", "будет", "ж", "тогда", "кто",
+    "этот", "того", "потому", "этого", "какой", "совсем", "ним", "здесь",
+    "этом", "один", "почти", "мой", "тем", "чтобы", "нее", "неё", "сейчас",
+    "были", "куда", "зачем", "всех", "никогда", "можно", "при", "наконец",
+    "два", "об", "другой", "хоть", "после", "над", "больше", "тот", "через",
+    "эти", "нас", "про", "всего", "них", "какая", "много", "разве", "три",
+    "эту", "моя", "впрочем", "хорошо", "свою", "этой", "перед", "иногда",
+    "лучше", "чуть", "том", "нельзя", "такой", "им", "более", "всегда",
+    "конечно", "всю", "между", "также", "это",
+}
+STOP_WORDS = list(ENGLISH_STOP_WORDS | CUSTOM_STOPWORDS | RUSSIAN_STOPWORDS)
 
 
-def load_readmes() -> dict[str, str]:
+def load_readmes() -> tuple[dict[str, str], int]:
     texts = {}
+    boilerplate_count = 0
     for path in README_DIR.glob("*.md"):
         content = path.read_text(encoding="utf-8", errors="ignore").strip()
-        if content:
-            texts[path.stem] = content
-    return texts
+        if not content:
+            continue
+        if BOILERPLATE_PATTERN.match(content):
+            boilerplate_count += 1
+            continue
+        texts[path.stem] = content
+    return texts, boilerplate_count
 
 
 def extract_explicit_track(text: str) -> str | None:
+    case_match = CASE_PATTERN.search(text)
+    if case_match:
+        num, title = case_match.group(1), case_match.group(2)
+        label = f"Кейс №{num}" + (f" «{title.strip()}»" if title else "")
+        return label
     match = TRACK_PATTERN.search(text)
     if not match:
         return None
@@ -92,8 +141,12 @@ def top_terms_per_cluster(vectorizer, km, n_terms: int = 6) -> dict[int, list[st
 
 
 def main() -> None:
-    readmes = load_readmes()
-    print(f"Loaded {len(readmes)} README files")
+    readmes, boilerplate_count = load_readmes()
+    print(f"Loaded {len(readmes) + boilerplate_count} README files")
+    print(
+        f"Skipped {boilerplate_count} auto-generated placeholder READMEs "
+        "(no real content -> excluded from clustering)"
+    )
 
     explicit: dict[str, str] = {}
     remaining: dict[str, str] = {}
@@ -130,6 +183,13 @@ def main() -> None:
 
     explicit_counts = Counter(explicit.values())
     summary_rows = []
+    if boilerplate_count:
+        summary_rows.append({
+            "track_label": "(no README content — auto-generated placeholder)",
+            "source": "boilerplate",
+            "repo_count": boilerplate_count,
+            "example_repos": "",
+        })
     for label, count in explicit_counts.most_common():
         examples = [n for n, t in explicit.items() if t == label][:5]
         summary_rows.append({
@@ -153,7 +213,10 @@ def main() -> None:
     print(summary.to_string(index=False))
     print(f"Saved -> {OUT_FILE}")
 
-    plot_top = summary.head(10).iloc[::-1]  # reverse for horizontal bar top-to-bottom
+    # The boilerplate bucket is a data-quality caveat, not an actual track —
+    # keep it out of the "top tracks" chart so it doesn't visually dominate.
+    plot_source = summary[summary["source"] != "boilerplate"]
+    plot_top = plot_source.head(10).iloc[::-1]  # reverse for horizontal bar top-to-bottom
     labels = [
         (t[:35] + "…") if len(t) > 35 else t for t in plot_top["track_label"]
     ]
