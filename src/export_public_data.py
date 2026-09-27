@@ -100,11 +100,18 @@ def main() -> None:
     c = crepo.set_index("repo")
     out["pr_refs"] = r.repo.map(c.pr_refs).astype("Int64")
     out["agent_branch_kinds"] = r.repo.map(c.agent_branch_kinds)
-    sig = commits[((commits.agent_trailer == 1) | (commits.agent_generated_marker == 1) | (commits.agent_account == 1))]
+    out["codex_prefix_branches"] = r.repo.map(c.codex_prefix_branches).astype("Int64")
+    out["claude_prefix_branches"] = r.repo.map(c.claude_prefix_branches).astype("Int64")
+    attributed = (commits.agent_trailer == 1) | (commits.agent_generated_marker == 1) | (commits.agent_account == 1)
+    sig = commits[attributed & (commits.agent_name_only == 0)]     # trailer, "generated with" line or service account
+    named = commits[attributed & (commits.agent_name_only == 1)]   # author or committer named exactly after the tool
     for kind in ["claude", "codex", "cursor", "copilot", "devin", "bot"]:
         out[f"signed_commits_{kind}"] = r.repo.map(sig[sig.agent_kind == kind].groupby("repo").size()).fillna(0).astype(int)
+    for kind in ["claude", "codex"]:
+        out[f"named_commits_{kind}"] = r.repo.map(named[named.agent_kind == kind].groupby("repo").size()).fillna(0).astype(int)
     rd = readme.set_index("repo")
-    for col in ["language", "words", "headings", "install_instructions", "deployed_link", "images", "mentions_agent_tool"]:
+    for col in ["language", "words", "headings", "install_instructions", "deployed_link", "images", "mentions_agent_tool",
+                "names_codex", "names_claude_code", "mentions_codex", "mentions_claude"]:
         v = r.repo.map(rd[col])
         out[f"readme_{col}"] = v.astype("Int64") if pd.api.types.is_numeric_dtype(rd[col]) else v
     out = out.rename(columns={"readme_install_instructions": "readme_run_instructions"})
@@ -117,9 +124,10 @@ def main() -> None:
     pub = pd.DataFrame({
         "id": cm.repo.map(ids), "minutes_from_start": ((cm.ctime - START) / 60).round(2),
         "author_minutes_from_start": ((cm.atime - START) / 60).round(2), "in_window": cm.in_window,
-        "is_merge": cm.is_merge, "files": cm.files, "added": cm.added, "deleted": cm.deleted,
+        "is_merge": cm.is_merge, "files": cm.files, "added": cm.added, "deleted": cm.deleted, "code_lines": cm.code_lines,
         "conventional": cm.conventional, "subject_script": cm.subject_script,
         "agent_kind": cm.agent_kind.where(((cm.agent_trailer == 1) | (cm.agent_generated_marker == 1) | (cm.agent_account == 1)), ""),
+        "agent_name_only": cm.agent_name_only,
         "author": cm.author, "author_is_bot": cm.author_bot})
     pub.sort_values(["id", "minutes_from_start"]).to_csv(OUT / "commits.csv", index=False)
 

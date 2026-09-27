@@ -1,0 +1,26 @@
+# Deviations from the analysis plan
+
+`analysis_plan.md` was written on 24 September 2026, after we had inspected descriptive numbers and before we ran any statistical test. The table lists every way the paper departs from it, and why. The first set of changes (v1) was made while drafting; the second (v2, 27 September 2026) follows the internal review in `reviews/`.
+
+| # | Plan | Paper | Version | Reason |
+|---|---|---|---|---|
+| 1 | Logistic regression of activity on log(days before the event) | v1: odds ratio per week. v2: no regression. Activity shares by creation group, with a χ² test on repositories that were open during the event and not in the batch | v1, v2 | The relation is not monotonic. The per-week odds ratio was driven by the organiser batch and by repositories archived before the event. |
+| 2 | Funnel: repositories, any team commit, active, matched to a track | Adds a stage for repositories archived before the event (446) and reports the organiser batch separately | v2 | The review found the archive timestamps. Archived repositories could not receive commits during the event. |
+| 3 | RQ3 prevalence among active repositories | v1: among the 1,254 repositories with team commits. v2: among active repositories, as planned | v2 | Returned to the plan. The v1 denominator mixed in 197 repositories with commits only outside the event window. |
+| 4 | Commits per 10 minutes on the main branches | All branches | v1 | Teams worked on non-default branches, and a team commit is defined across all branches. |
+| 5 | Post-deadline commits from 18:00 to the archive time | Commits after 18:00 in active repositories, with the number before 19:00 | v1 | The archive times of individual repositories are not observed; only `updated_at` is. |
+| 6 | README words: median and IQR | v1: median with bootstrap CI. v2: median and IQR, as planned | v2 | Returned to the plan. |
+| 7 | RQ7: descriptive only | A Kruskal–Wallis test of window commits across tracks, with df and ε² | v1 | Added to judge whether the track differences in Table 2 are larger than chance. Labelled as added. |
+| 8 | Deadline share: report the per-team distribution | v1: k-means clusters instead. v2: the per-team distribution, as planned; the clusters are exploratory and compared with a null model | v2 | The clusters split a continuum (silhouette 0.30 against 0.19 under a null model). |
+| 9 | Commit size by signature (exploratory) | v2: dropped. v3–v4: reinstated as planned (exploratory), on lines outside lock, data and generated files, comparing per-repository medians of window commits with a Wilcoxon signed-rank test; reported with two robustness variants | v2–v4 | Lock and data files had distorted the v1 measure; the robustness variants show the difference is not stable. |
+| 10 | Keys vs `.gitignore` coverage (exploratory) | Kept, labelled exploratory, and stratified by LLM-SDK use (Mantel–Haenszel) | v2 | The crude association was confounded by LLM use. |
+| 11 | Holm correction within each question (the three `AGENTS.md` tests were planned, not exploratory) | Applied to the three `AGENTS.md` tests. Other tests are single tests per question and are reported unadjusted, as stated in the paper | v1 | Only RQ4 (v1) had a family of tests on one question. |
+| 12 | Not in the plan | Added: commit ID joins to test whether key-bearing commits were agent-signed; a per-tool trace matrix; a sensitivity analysis excluding repositories with pre-event or post-deadline commits; shifted windows; an independent recount of the core counts | v2 | Requested in the review. All are labelled as added. |
+| 13 | README language rule: Kazakh if at least 3% of Cyrillic letters are Kazakh-specific | Kazakh also requires Cyrillic letters to be at least half of all letters | v2 | 11 of 34 "Kazakh" READMEs under the old rule were mostly Latin script. |
+| 14 | Commit-message script | Script of the subject line of non-merge commits | v2 | Latin-script agent trailers in the message body had pushed short Cyrillic subjects to "Latin". |
+| 15 | Not in the plan | README naming of a tool (strict: in README prose; broad: anywhere in the README) as a reference for trace detection; reported as conditional detection among teams that name the tool, with its association to the traces | v3–v4 | Requested in review to size what traces miss. It is not independent of the traces, so it is not called recall. |
+| 16 | Agent traces | v4: Codex traces split into Codex-specific (branch prefix `codex`, signature, author named "Codex") and the shared `AGENTS.md`; signatures separated from author-name matches; branch prefix matched literally | v4 | Review found that `AGENTS.md` is not Codex-specific and that most Codex "signatures" were author names. |
+| 17 | Kruskal–Wallis effect size | v2 reported (H − k + 1)/(n − k), which is η²_H, under the label ε². v3–v4 report ε² = H/(n − 1) (Tomczak & Tomczak 2014) | v3 | Mislabelled statistic corrected. |
+| 18 | Signed and conventional commit shares | Computed on window commits of active repositories (v1–v3: all team commits) | v4 | Consistent denominators. |
+| 19 | Run instructions in READMEs | A heading on installation, setup or usage, or a line inside a code block that starts with a command (the fence line excluded) | v4 | The v2 rule counted any fenced Python block. |
+

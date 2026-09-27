@@ -1,0 +1,23 @@
+framework,repos,pct
+React,491,46.5
+Uvicorn,464,43.9
+FastAPI,457,43.2
+TypeScript (dep),455,43.0
+pytest,419,39.6
+Vite,347,32.8
+Pydantic,327,30.9
+NumPy,315,29.8
+pandas,311,29.4
+Tailwind,224,21.2
+Next.js,174,16.5
+Playwright,154,14.6
+Streamlit,143,13.5
+Vitest,142,13.4
+NetworkX,125,11.8
+scikit-learn,93,8.8
+SQLAlchemy,82,7.8
+Whisper,52,4.9
+Express,45,4.3
+PyTorch,33,3.1
+CatBoost,24,2.3
+LightGBM,20,1.9

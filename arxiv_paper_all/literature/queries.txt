@@ -1,0 +1,31 @@
+# group | query   (run by run_searches.sh through DataCite-arXiv and Crossref)
+hackathons | hackathon GitHub repositories
+hackathons | hackathon generative AI
+hackathons | hackathon large language models
+hackathons | hackathon code quality participants
+agents | vibe coding
+agents | agentic coding
+agents | coding agents pull requests GitHub
+agents | AI agent authored pull requests open source
+agents | Claude Code agent
+agents | OpenAI Codex coding agent
+agents | AGENTS.md agent context files
+agents | AI coding assistant productivity experiment
+agents | GitHub Copilot developer productivity
+education | generative AI programming education
+education | novice programmers large language models
+security | secret leakage GitHub repositories
+security | hard-coded credentials source code
+security | API key leakage
+security | security of AI-generated code
+security | vibe coding security vulnerabilities
+docs-msr | README files GitHub documentation
+docs-msr | perils of mining GitHub
+docs-msr | mining software repositories threats to validity
+annotation | large language models text annotation crowd workers
+timing | commit activity deadline students procrastination
+timing | time pressure software development commits
+region | software engineering Kazakhstan
+region | computing education Central Asia
+stack | technology stack choice hackathon projects
+docs-msr | multilingual README non-English GitHub repositories

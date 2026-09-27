@@ -5,8 +5,11 @@ build_repo_table.py) we record timing, size and message features, plus agent
 signatures: co-author trailers or "Generated with" markers that name a coding
 agent, and agent/bot author accounts. Author names and emails are only matched
 against agent patterns in memory; they are never written out. Commit messages
-are reduced to features (length, conventional prefix, script); the text itself
-is not stored.
+are reduced to features (length, conventional prefix, script of the subject line
+and of the whole message); the text itself is not stored. Authors are counted
+through a salted hash whose salt is drawn at run time and never saved, so the
+key cannot be reversed. Commit SHAs are public and are kept so that other
+private, aggregate-only analyses (e.g. RQ4) can join on them.
 
 Branch names are checked for agent prefixes (e.g. codex/..., claude/...), which
 some agents use when they open branches on their own.
@@ -14,7 +17,9 @@ some agents use when they open branches on their own.
 from __future__ import annotations
 
 import csv
+import hashlib
 import re
+import secrets
 import subprocess
 from concurrent.futures import ProcessPoolExecutor
 from datetime import datetime
@@ -35,6 +40,7 @@ AGENT_TOKEN = re.compile(rf"\b({AGENTS})\b", re.I)
 TRAILER = re.compile(r"^co-authored-by:(.*)$", re.I | re.M)
 GENERATED = re.compile(rf"generated (with|by)[^\n]*\b({AGENTS})\b", re.I)
 BOT_ACCOUNT = re.compile(r"\[bot\]|noreply@anthropic\.com|@openai\.com|cursoragent|copilot", re.I)
+TOOL_NAME = re.compile(rf"({AGENTS})(?:[ _-]?(?:agent|bot|ai|cli))?(?:\[bot\])?", re.I)
 AGENT_BRANCH = re.compile(rf"^({AGENTS})[/_-]", re.I)
 CONVENTIONAL = re.compile(r"^(feat|fix|chore|docs|refactor|test|tests|style|perf|ci|build|revert)(\([^)]*\))?!?:", re.I)
 KAZAKH = re.compile(r"[әғқңөұүһіӘҒҚҢӨҰҮҺІ]")
@@ -42,9 +48,15 @@ CYRILLIC = re.compile(r"[А-Яа-яЁё]")
 LATIN = re.compile(r"[A-Za-z]")
 RS, US = "\x1e", "\x1f"
 
-COMMIT_FIELDS = ["repo", "ctime", "atime", "in_window", "is_merge", "files", "added", "deleted",
-                 "subject_chars", "body_lines", "conventional", "script", "agent_trailer",
-                 "agent_generated_marker", "agent_account", "agent_kind"]
+# Files whose changes do not reflect written code: lock files, data, minified or generated output.
+NON_CODE = re.compile(r"(^|/)(package-lock\.json|yarn\.lock|pnpm-lock\.yaml|poetry\.lock|uv\.lock|Pipfile\.lock|"
+                      r"Cargo\.lock|go\.sum|composer\.lock)$|\.(lock|csv|tsv|jsonl|parquet|xlsx?|pdf|png|jpe?g|gif|svg|ico|"
+                      r"mp3|wav|mp4|zip|ipynb|min\.js|min\.css|map)$|(^|/)(node_modules|dist|build|\.next|vendor|venv|\.venv)/", re.I)
+
+COMMIT_FIELDS = ["repo", "sha", "ctime", "atime", "in_window", "is_merge", "files", "added", "deleted", "code_lines",
+                 "subject_chars", "body_lines", "conventional", "script", "subject_script", "agent_trailer",
+                 "agent_generated_marker", "agent_account", "agent_name_only", "agent_kind", "author_key", "author_bot"]
+SALT = secrets.token_hex(16)  # per run, never written out
 
 
 def git(git_dir: Path, *args: str) -> str:
@@ -69,6 +81,10 @@ def agent_kind(text: str) -> str:
     return {"openai": "codex", "chatgpt": "codex", "anthropic": "claude"}.get(token, token)
 
 
+def author_key(email: str) -> str:
+    return hashlib.sha256((SALT + email.strip().lower()).encode()).hexdigest()[:16]
+
+
 def process(args: tuple[str, str]) -> tuple[list[dict], dict]:
     name, created_at = args
     git_dir = CLONE_DIR / f"{name}.git"
@@ -78,40 +94,52 @@ def process(args: tuple[str, str]) -> tuple[list[dict], dict]:
     current = None
     for line in git(git_dir, "log", "--branches", "--numstat", "--format=@@%H").splitlines():
         if line.startswith("@@"):
-            current = stats.setdefault(line[2:], {"files": 0, "added": 0, "deleted": 0})
+            current = stats.setdefault(line[2:], {"files": 0, "added": 0, "deleted": 0, "code_lines": 0})
         elif line.strip() and current is not None:
-            a, d, _ = line.split("\t", 2)
+            a, d, path = line.split("\t", 2)
+            n = (int(a) if a.isdigit() else 0) + (int(d) if d.isdigit() else 0)
             current["files"] += 1
             current["added"] += int(a) if a.isdigit() else 0
             current["deleted"] += int(d) if d.isdigit() else 0
+            if not NON_CODE.search(path.split(" => ")[-1].rstrip("}")):
+                current["code_lines"] += n
 
-    fmt = f"--format=%H{US}%P{US}%ct{US}%at{US}%an <%ae>{US}%cn <%ce>{US}%B{RS}"
+    fmt = f"--format=%H{US}%P{US}%ct{US}%at{US}%an <%ae>{US}%cn <%ce>{US}%ae{US}%B{RS}"
     commits = []
     for record in git(git_dir, "log", "--branches", fmt).split(RS):
         record = record.strip("\n")
         if not record:
             continue
-        sha, parents, ctime, atime, author, committer, body = record.split(US, 6)
-        st = stats.get(sha, {"files": 0, "added": 0, "deleted": 0})
+        sha, parents, ctime, atime, author, committer, email, body = record.split(US, 7)
+        st = stats.get(sha, {"files": 0, "added": 0, "deleted": 0, "code_lines": 0})
         subject = body.split("\n", 1)[0]
-        probe = {"parents": parents.split(), "subject": subject, "ctime": int(ctime), **st}
+        probe = {"parents": parents.split(), "subject": subject, "ctime": int(ctime),
+                 **{k: st[k] for k in ("files", "added", "deleted")}}
         if is_template(probe, created_ts):
             continue
         trailers = " ".join(TRAILER.findall(body))
-        account_hit = bool(BOT_ACCOUNT.search(author) or BOT_ACCOUNT.search(committer)
-                           or AGENT_TOKEN.search(author) or AGENT_TOKEN.search(committer))
-        kind = agent_kind(trailers) or agent_kind(" ".join(GENERATED.findall(body) and [body]))
+        # Accounts count by account patterns ([bot], agent service addresses) or by a name that is
+        # exactly a tool name ("Codex", "Claude agent"); a personal name that merely contains an
+        # agent word (e.g. "Devin ...") does not count.
+        service_hit = any(BOT_ACCOUNT.search(who) for who in (author, committer))
+        name_hit = any(TOOL_NAME.fullmatch(who.split(" <")[0].strip()) for who in (author, committer))
+        account_hit = service_hit or name_hit
+        marker = GENERATED.search(body)
+        kind = agent_kind(trailers) or (agent_kind(marker.group(0)) if marker else "")
         if not kind and account_hit:
             kind = agent_kind(author + " " + committer) or "bot"
         commits.append({
-            "repo": name, "ctime": int(ctime), "atime": int(atime),
+            "repo": name, "sha": sha, "ctime": int(ctime), "atime": int(atime),
             "in_window": int(WINDOW_START <= int(ctime) < WINDOW_END),
             "is_merge": int(len(parents.split()) > 1), **st,
             "subject_chars": len(subject), "body_lines": max(0, len(body.strip().splitlines()) - 1),
             "conventional": int(bool(CONVENTIONAL.match(subject))), "script": script_of(body),
+            "subject_script": script_of(subject),
             "agent_trailer": int(bool(AGENT_TOKEN.search(trailers))),
             "agent_generated_marker": int(bool(GENERATED.search(body))),
             "agent_account": int(account_hit), "agent_kind": kind,
+            "agent_name_only": int(name_hit and not service_hit and not AGENT_TOKEN.search(trailers) and not marker),
+            "author_key": author_key(email), "author_bot": int(bool(BOT_ACCOUNT.search(author))),
         })
 
     branches = git(git_dir, "for-each-ref", "--format=%(refname:short)", "refs/heads").split()
@@ -125,6 +153,8 @@ def process(args: tuple[str, str]) -> tuple[list[dict], dict]:
         "branches": len(branches),
         "agent_branches": len(agent_branches),
         "agent_branch_kinds": ";".join(sorted({agent_kind(b) for b in agent_branches})),
+        "codex_prefix_branches": sum(bool(re.match(r"codex[/_-]", b, re.I)) for b in branches),
+        "claude_prefix_branches": sum(bool(re.match(r"claude[/_-]", b, re.I)) for b in branches),
         "pr_refs": len(git(git_dir, "for-each-ref", "--format=%(refname)", "refs/pull").split()),
         "team_commits": len(commits),
         "merges": sum(c["is_merge"] for c in commits),

@@ -1,0 +1,33 @@
+% Figure 1: study design. Numbers come from latex/numbers.tex macros.
+% Colours follow the figure rule of the paper: blue for data and measures, grey for checks.
+\begin{tikzpicture}[
+  font=\scriptsize,
+  every node/.style={inner sep=0pt},
+  box/.style={rectangle, rounded corners=2pt, draw=#1!60, fill=#1!6, line width=0.5pt,
+              inner sep=4pt, text width=4.5cm, minimum height=1.25cm, align=center, text=ink},
+  rq/.style={rectangle, rounded corners=2pt, draw=okblue!60, fill=white, line width=0.5pt,
+             inner sep=4pt, text width=3.45cm, minimum height=1.45cm, align=center, text=ink},
+  flow/.style={-{Stealth[length=4.2pt,width=3.4pt]}, line width=0.75pt, draw=inktwo},
+]
+\node[box=okblue] (a) at (0,0)
+  {\textbf{Setting}\\[2pt] \eventname, \eventdate\\ \eventhours{} hours, OpenAI Codex required};
+\node[box=okblue] (b) at (5.55,0)
+  {\textbf{Data}\\[2pt] \NRqOneTotal{} organiser-created repositories,\\ mirrored with all branches and history};
+\node[box=inktwo] (c) at (11.1,0)
+  {\textbf{Checks}\\[2pt] clone vs.\ API counts; independent recount;\\ template audit; blind hand labels};
+\draw[flow] (a) -- (b);
+\draw[flow] (b) -- (c);
+
+\foreach \x/\name/\q/\unit/\n [count=\i] in {
+    -0.52/q1/{RQ1 Population}/{repositories and their fate}/{\NRqOneTotal{} repositories},
+    3.63/q2/{RQ2 Process}/{commit times and agent traces}/{\NRqOneActiveN{} active},
+    7.78/q3/{RQ3 Product}/{stack, artefacts, README}/{\NRqOneActiveN{} active},
+    11.93/q4/{RQ4 Risk}/{key-format strings in history}/{\NRqOneActiveN{} active}}
+  \node[rq] (\name) at (\x,-2.35) {\textbf{\q}\\[2pt] \unit\\[1pt] {\color{inktwo} n: \n}};
+\coordinate (bus) at (0,-1.12);
+\draw[line width=0.75pt, draw=inktwo] (c.south) -- (c.south |- bus);
+\draw[line width=0.75pt, draw=inktwo] (q1.north |- bus) -- (q4.north |- bus);
+\foreach \q in {q1,q2,q3,q4} \draw[flow] (\q.north |- bus) -- (\q.north);
+\node[anchor=north, text=inktwo, font=\scriptsize\itshape, text width=15.9cm, align=center] at ($(q2.south)!0.5!(q3.south)+(0,-0.2)$)
+  {Known in advance: the deadline (\deadline) and the tool every team had to use. Observed: what the repositories record.};
+\end{tikzpicture}

@@ -1,0 +1,329 @@
+\documentclass{article}
+
+\usepackage{arxiv}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{xurl}
+\usepackage{booktabs}
+\usepackage{amsmath,amsfonts,amssymb}
+\usepackage{nicefrac}
+\usepackage{microtype}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{doi}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,backgrounds,calc}
+\usepackage[group-separator={,},group-minimum-digits=4,mode=text]{siunitx}
+\usepackage[capitalise,noabbrev]{cleveref}
+
+\input{colors}
+\input{event_macros}
+\input{numbers}
+\graphicspath{{../figures/}}
+\input{layout}
+
+\title{Five Hours, \NReposTotal{} Repositories: An Empirical Study of an Agent-Assisted Mass Hackathon}
+\renewcommand{\shorttitle}{Five Hours, \NReposTotal{} Repositories}
+\renewcommand{\headeright}{Preprint}
+\renewcommand{\undertitle}{Preprint}
+
+\author{
+  Talgar Bayan \\
+  \pending{affiliation} \\
+  \texttt{talgar.bayan@gmail.com}
+}
+
+\begin{document}
+\maketitle
+
+% =====================================================================================
+\begin{abstract}
+HackAlem AI was a \eventhours-hour, in-person hackathon held in Astana, Kazakhstan, on \eventdate. The organisers created a public GitHub repository for every registration and required teams to use an AI coding agent (OpenAI Codex); the event was also organised as an official Guinness World Records attempt. Because every registration received a repository, the organisation's \NReposTotal{} repositories record which registrations produced code, when, and with which tools, including those that produced none. We mirrored all repositories with their full history and studied participation, work rhythm, technology choices, traces of agent use, documentation language, and credential hygiene. Only \NReposActive{} repositories (\NPctActive\%) received team commits during the event, and \NPctEmpty\% received none at all. Most active teams committed in at least four of the five hours, yet \NPctLastHour\% of event-time commits fell in the last hour, and a cluster of \NRhythmCTwoPct\% of teams made most of their commits then. Test files appeared in \NHasTestsPct\% of repositories with team commits and agent context files in \NAnyAgentFilePct\%. README files were mostly in Russian (\NReadmeRussianPct\%); \NReadmeKazakhPct\% were in Kazakh. Strings with the structure of OpenAI API keys appeared in the public history of \NReposOpenaiKeyN{} repositories, often in \texttt{.env.example} files. We release the derived data and the pipeline, and discuss what organisers of agent-assisted events can learn from these records.
+\end{abstract}
+\keywords{hackathons \and mining software repositories \and AI coding agents \and developer behaviour \and secret leakage}
+
+% =====================================================================================
+\section{Introduction}\label{sec:intro}
+
+Hackathons are time-bounded events in which small teams build software prototypes, and they have been studied both through case studies and at scale through the repositories teams leave behind~\cite{nolte2020hackathon,mcintosh2021hackathon,halmans2026hackrep}. In parallel, AI programming assistants and, more recently, autonomous coding agents have changed how software is written. Controlled experiments and field studies report faster task completion with assistants~\cite{peng2023copilot,ziegler2024copilot}, observational work describes how programmers interact with them~\cite{barke2023grounded,liang2024usability}, and agents are now evaluated on real repository tasks~\cite{jimenez2023swebench,yang2024sweagent} and observed authoring pull requests in open-source projects~\cite{li2025aidev,agarwal2026aiides}. Studies of generative AI inside hackathons exist, but they are qualitative and small: interviews at one event~\cite{zhou2026quickbuild}, one educational event with nine teams~\cite{gama2025vibes}, a month-long online event~\cite{chen2026codeforall}, and a single university case~\cite{sajja2024genaihack}.
+
+HackAlem AI offers a different view. It took place in Astana on \eventdate, in person, with a \eventhours-hour coding window, teams of up to \teamsizemax{} people, and a requirement to use Codex during development~\cite{hackalem2026site}. It received \applications{} applications for \seats{} seats~\cite{qumash2026queue,ulys2026survival} and was organised as an official Guinness World Records attempt for the most participants in an agentic AI hackathon, with the result pending at the time of writing~\cite{astanatimes2026guinness}. For our purposes, the key design choice was technical: the organisers created a public repository in the \ghorg{} GitHub organisation for every registration and archived the repositories after the deadline. The organisation therefore contains every registration, not only the projects that teams chose to submit or list, and every team worked under the same deadline and tooling rule.
+
+We mirrored all \NReposTotal{} repositories with their full history, rebuilt every measure from git, and checked the result against the GitHub API (\cref{fig:overview}). We ask seven research questions:
+
+\begin{description}
+  \item[RQ1] How many registrations turned into code, and does this depend on when the repository was created?
+  \item[RQ2] How did teams distribute their work over the five hours?
+  \item[RQ3] Which languages, frameworks and LLM services did teams use?
+  \item[RQ4] What traces of AI coding agents do the repositories contain?
+  \item[RQ5] In which languages did teams document their work, and how complete is the documentation?
+  \item[RQ6] How often did credentials reach the public history, and where?
+  \item[RQ7] How did teams distribute over the \NTracksCount{} tracks?
+\end{description}
+
+\noindent To our knowledge, this is the first repository-level study of a complete hackathon population in which AI-agent use was required. Our contributions are:
+\begin{itemize}
+  \item an empirical account of participation, work rhythm, technology choices, agent traces, documentation and credential hygiene across all \NReposTotal{} repositories of one event (\cref{sec:results});
+  \item measurement lessons for mining organiser-created repositories, including template commits made by more than one organiser account and agent signatures that reflect tool defaults rather than use (\cref{sec:methods,sec:discussion});
+  \item a derived dataset with hashed identifiers and a reproducible pipeline in which every reported number is generated from the data (\cref{sec:ethics}).
+\end{itemize}
+
+\begin{figure}[t]
+  \centering
+  \input{../figures/architecture}
+  \caption{Overview of the study. Every registration received a public repository (a). We collected the repositories and their full history (b), checked the collected data against independent sources (c), and derived the features (d) used for seven research questions (e). The outputs (f) are this paper, a derived dataset with hashed identifiers, and the pipeline with its checks.}
+  \label{fig:overview}
+\end{figure}
+
+% =====================================================================================
+\section{Background and related work}\label{sec:related}
+
+\paragraph{Hackathons and their repositories.}
+Nolte et al.\ studied continuation of hackathon projects across many events and found that short-term continuation relates to preparation and winning, while long-term continuation relates to team skills~\cite{nolte2020hackathon}. McIntosh and Hardin analysed the GitHub repositories of the U.S.\ Major League Hacking events of two seasons and found that most commits happen within the first week and few projects remain active six months later~\cite{mcintosh2021hackathon}. HackRep provides a large dataset of hackathon repositories collected from project listings, with analyses of continuation, team composition and event geography~\cite{halmans2026hackrep}. These datasets contain projects that teams chose to list; they cannot show registrations that produced no code.
+
+\paragraph{AI programming assistants and coding agents.}
+A controlled experiment found that developers with GitHub Copilot finished a programming task faster than a control group~\cite{peng2023copilot}, and a large user study related perceived productivity to usage data~\cite{ziegler2024copilot}. Programmers interact with such assistants in an acceleration mode and an exploration mode~\cite{barke2023grounded}, and developers report both benefits and control problems~\cite{liang2024usability}. Agents now operate on whole repositories: SWE-bench measures issue resolution~\cite{jimenez2023swebench}, SWE-agent studies agent--computer interfaces~\cite{yang2024sweagent}, and the AIDev dataset collects agent-authored pull requests from five agents~\cite{li2025aidev}. Using AIDev, Agarwal et al.\ report velocity gains after agent adoption together with persistent quality risks~\cite{agarwal2026aiides}. Agent context files such as \texttt{AGENTS.md} and \texttt{CLAUDE.md} have been characterised in open-source repositories~\cite{chatlatanagulchai2025agentreadmes}, and their effect on agent task success has been evaluated~\cite{gloaguen2026agentsmd}. SWE-chat records real agent sessions and finds that in a large share of them the agent writes nearly all committed code~\cite{baumann2026swechat}.
+
+\paragraph{Vibe coding and generative AI in hackathons and education.}
+``Vibe coding'' describes building software mainly through natural-language prompts to an AI system~\cite{gama2025vibes,waseem2025vibepractice}. Hackathon studies report that teams use generative AI for coding, learning and documentation and check its output under time pressure~\cite{zhou2026quickbuild}, that novices can deliver working demonstrations but engage little with engineering practice~\cite{gama2025vibes}, and that a no-manual-editing rule shapes prompting and debugging~\cite{chen2026codeforall}. Computing educators have reviewed the implications of these tools for teaching~\cite{prather2023robots,denny2024computinged}.
+
+\paragraph{Secrets in public repositories.}
+Secret leakage on GitHub is frequent and persistent~\cite{meli2019git}; detection and mitigation methods have been proposed~\cite{sinha2015secretkeys} and benchmarked~\cite{basak2023secretbench}. Developers who leaked secrets describe the difficulty of remediation~\cite{krause2022pushed}, and code completion models can reproduce hard-coded credentials~\cite{huang2024codesecret}. Two recent lines of work concern AI-built software directly: LLM API keys leaked from mobile apps~\cite{gao2026mindyourkey}, and vulnerabilities in agent-generated and vibe-coded applications~\cite{zhao2025vibesafe,deng2026vibeinsecurity}.
+
+\paragraph{Mining GitHub.}
+GitHub data carries known perils, such as inactive or personal repositories and unmerged-looking pull requests~\cite{kalliamvakou2014perils}, and different mining tools can disagree on basic counts~\cite{hoess2025toolmatter}. README content has been categorised in earlier work~\cite{prana2019readme}. Work on developer procrastination informs our reading of deadline effects~\cite{saghi2025procrastination}.
+
+% =====================================================================================
+\section{The event and its infrastructure}\label{sec:event}
+
+\Cref{tab:event} lists the facts about the event that we use, with their sources. Registration was free; solo registration was allowed~\cite{hackalem2026site}. News reports describe long queues at the entrance and registered participants who could not get in; the organisers stated that participants had been told in advance that seats were limited~\cite{qumash2026queue,ulys2026survival}.
+
+\begin{table}[t]
+  \centering\small
+  \caption{Facts about the event used in this paper. Organiser and news sources were accessed on \datacollected.}
+  \label{tab:event}
+  \begin{tabularx}{\linewidth}{@{}lXl@{}}
+    \toprule
+    Item & Value & Source \\
+    \midrule
+    Date and place & \eventdate, Astana, in person & \cite{hackalem2026site} \\
+    Coding window & five hours; \eventwindow{} local time (\astanatz), inferred from commit and archive times & \cite{astanatimes2026guinness,kazinform2026fivehours} \\
+    Teams & up to \teamsizemax{} members; solo entry allowed & \cite{hackalem2026site} \\
+    Tooling rule & Codex required during development & \cite{hackalem2026site} \\
+    Capacity & \seats{} seats; \applications{} applications & \cite{hackalem2026site,qumash2026queue,ulys2026survival} \\
+    Participants & from \countries{} countries & \cite{kazinform2026fivehours,astanatimes2026guinness} \\
+    Prizes & \prizes{} in prizes and technology resources & \cite{hackalem2026site} \\
+    Record attempt & Guinness World Records, most participants in an agentic AI hackathon; previous record \prevrecord{} participants; result pending & \cite{astanatimes2026guinness} \\
+    Results & awards on \awardsdate & \cite{hackalem2026site} \\
+    Repositories & one public repository per registration in \ghorg{}; archived after the deadline & this study \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Each repository was named \texttt{hack-<id>-<team>} and started with an organiser commit titled ``Initial commit'' that added a one-line README. The organisers archived the repositories after the deadline: GitHub's \texttt{updated\_at} timestamps place \NArchiveN{} archive operations between \NArchiveFirst{} and \NArchiveLast{}, and all \NArchiveAllArchived{} repositories were archived when we collected the data. The event offered \NTracksCount{} tracks, ten sector tracks and two special tracks, each with one industry or public-sector partner (\cref{tab:tracks}).
+
+\begin{table}[t]
+  \centering\small
+  \caption{The \NTracksCount{} tracks with the active repositories matched to each, their median event-window commits, and the share with test files and with Python as primary language. Task descriptions are our summaries of the teams' READMEs.}
+  \label{tab:tracks}
+  \begin{tabularx}{\linewidth}{@{}rllXrrrr@{}}
+    \toprule
+    No. & Track & Partner & Task & Repos & Commits & Tests & Python \\
+     & & & & & (median) & (\%) & (\%) \\
+    \midrule
+    01 & Energy & Samruk-Kazyna & Agentic AI that forecasts wind-farm power output from weather data & \NTracksTZeroOneN & \NTracksTZeroOneCommits & \NTracksTZeroOneTests & \NTracksTZeroOnePython \\
+    02 & Finance & Freedom & ``Money Graph'': rebuild an organised group from a transaction network (AML) & \NTracksTZeroTwoN & \NTracksTZeroTwoCommits & \NTracksTZeroTwoTests & \NTracksTZeroTwoPython \\
+    03 & Management & Halyk Bank & ``Career Quest'': AI guide linking employee skills to growth steps & \NTracksTZeroThreeN & \NTracksTZeroThreeCommits & \NTracksTZeroThreeTests & \NTracksTZeroThreePython \\
+    04 & Telecom & Beeline & Agent deciding which subscribers get which tariff offer & \NTracksTZeroFourN & \NTracksTZeroFourCommits & \NTracksTZeroFourTests & \NTracksTZeroFourPython \\
+    05 & Logistics & ekt.kz & Automatic supplier orders to replenish stock, approved by a manager & \NTracksTZeroFiveN & \NTracksTZeroFiveCommits & \NTracksTZeroFiveTests & \NTracksTZeroFivePython \\
+    06 & Creative ind. & Firebird & ``\#79-lite'': pick up to three event contractors and explain the choice & \NTracksTZeroSixN & \NTracksTZeroSixCommits & \NTracksTZeroSixTests & \NTracksTZeroSixPython \\
+    07 & Education & AI Sana & Challenge hub: turn a business problem into a task for student teams & \NTracksTZeroSevenN & \NTracksTZeroSevenCommits & \NTracksTZeroSevenTests & \NTracksTZeroSevenPython \\
+    08 & Innovation & Samruk-Kazyna & ``Khattama'': minutes and action items from Kazakh, Russian or mixed meeting audio & \NTracksTZeroEightN & \NTracksTZeroEightCommits & \NTracksTZeroEightTests & \NTracksTZeroEightPython \\
+    09 & Communications & Halyk Bank & ``Voice Router'': a voice AI that routes calls in an insurance contact centre & \NTracksTZeroNineN & \NTracksTZeroNineCommits & \NTracksTZeroNineTests & \NTracksTZeroNinePython \\
+    10 & Trade & ekt.kz & AI shopping assistant: products, analogues, prices, stock, cart & \NTracksTOneZeroN & \NTracksTOneZeroCommits & \NTracksTOneZeroTests & \NTracksTOneZeroPython \\
+    11 & Special & Kazakhtelecom & Agent comparing org-structure documents before and after a reorganisation & \NTracksTOneOneN & \NTracksTOneOneCommits & \NTracksTOneOneTests & \NTracksTOneOnePython \\
+    12 & Special & Astana Innovations & ``Akim for five hours'': city simulator that splits a budget across areas and districts & \NTracksTOneTwoN & \NTracksTOneTwoCommits & \NTracksTOneTwoTests & \NTracksTOneTwoPython \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+% =====================================================================================
+\section{Data and methods}\label{sec:methods}
+
+\paragraph{Collection.}
+On \datacollected{} we listed all repositories of the organisation through the GitHub REST API, collected default-branch commit counts and commit times through GraphQL, and downloaded every root README. We then made mirror clones of all \NReposTotal{} repositories, which keep every branch, pull-request reference and the full history. All clones completed. The repositories were archived, so their content could no longer change.
+
+\paragraph{Definitions.}
+A \emph{team commit} is any commit reachable from a branch, counted once per SHA, except the organisers' template commit. We identify the template commit by a rule that does not depend on the author account: a root commit titled ``Initial commit'' that changes one file by two added lines and was made within two minutes of the repository's creation. An \emph{empty repository} has no team commits. The \emph{event window} is \eventwindow{} local time on \eventdate, measured on commit timestamps; an \emph{active repository} has at least one team commit in the window. A repository corresponds to one registration, which may be a team of up to \teamsizemax{} people or one person; we never infer head counts. RQ1 uses all \NReposTotal{} repositories, RQ2 and RQ7 the \NReposActive{} active ones, and RQ3--RQ6 the \NReposWithCommits{} repositories with team commits.
+
+\paragraph{Features.}
+From the final state of each default branch we record languages by file size, dependencies declared in package manifests, and frameworks derived from them. We detect LLM SDKs from manifests and from import statements, excluding vendored folders. Agent traces are (i)~context files: \texttt{AGENTS.md} (by that exact name), \texttt{CLAUDE.md}, and Cursor, Copilot and other agent rule files; (ii)~commits whose co-author trailer, ``generated with'' line or author account names a coding agent; (iii)~branches whose names start with an agent name; and (iv)~pull-request references. For documentation we classify the root README by the letters of its prose after removing code, links and markup: Kazakh if at least three per cent of its Cyrillic letters are specific to Kazakh (nine Cyrillic letters that Russian does not use), Russian if Cyrillic letters are at least half of all letters, English if Latin letters are at least four fifths, and mixed otherwise. For credentials we ran Gitleaks~\cite{gitleaks2026} over every reference of every clone with redacted output, kept only the rule, file and time of each finding, and never tested any string against a service.
+
+\paragraph{Track labels.}
+Track labels come from an earlier per-repository table and were checked against README text with keyword rules; we read every disagreement and corrected \NLabelFixes{} labels. \NReposTrackUnclear{} active repositories could not be assigned to a track.
+
+\paragraph{Validation.}
+\Cref{tab:validation} summarises the checks. Default-branch commit counts from the clones equal those from the GitHub API for every repository. The rebuilt table agrees with the earlier per-repository table for nearly all repositories; the few differences come from commits reachable only through pull-request references, which the earlier table counted and we report separately, and from repositories whose earlier values we could not reproduce. A live check of \NChecksLiveSpotCheckN{} sampled repositories against GitHub showed that some template commits had been made by a second organiser account and were counted as team commits. We then audited all \NTemplateAuditN{} repositories where this could affect the counts and found \NValidationTemplateFixes{} such repositories, all created early and with test-like names; we corrected them.
+
+\begin{table}[t]
+  \centering\small
+  \caption{Validation checks and their results.}
+  \label{tab:validation}
+  \begin{tabularx}{\linewidth}{@{}Xl@{}}
+    \toprule
+    Check & Result \\
+    \midrule
+    Default-branch commit counts, clone vs.\ GitHub API & \NValidationCloneApiAgree{} of \NReposTotal{} identical \\
+    Template commit found by the account-independent rule & \NValidationTemplateFound{} repositories; \NValidationHistoryRewritten{} rewrote history \\
+    Template commits by a second organiser account counted as team commits & \NValidationTemplateFixes{} repositories, corrected \\
+    Team commits per repository, rebuilt vs.\ earlier table & \NValidationSameTeamCommits{} of \NReposTotal{} equal \\
+    Event-window commits per repository & \NValidationSameWindowCommits{} of \NReposTotal{} equal \\
+    Hours with commits per repository & \NValidationSameHours{} of \NReposTotal{} equal \\
+    Track labels read against README text & \NLabelFixes{} corrected; \NReposTrackUnclear{} unclear \\
+    OpenAI-pattern findings with the structural marker of OpenAI keys & \NValidationOpenaiMarker{} of \NOpenaiFindings{} \\
+    README language rule vs.\ hand labels (\NChecksReadmeSampleN{} READMEs) & \pending{labelling in progress} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\paragraph{Statistics.}
+We wrote the analysis plan before running any test. Proportions carry Wilson 95\% confidence intervals and medians bootstrap intervals from \num{10000} resamples. We compare groups with Mann--Whitney tests (effect size Cliff's $\delta$) and \chisq{} tests (Cramér's $V$), with Holm correction within each question, and model activity by repository creation date with logistic regression. Work rhythms are clustered with $k$-means on each team's hourly commit shares, with $k$ from two to six chosen by silhouette score. All numbers in this paper are generated from the data by the released scripts.
+
+\paragraph{Use of AI tools.}
+The collection and analysis code, the figures and a first draft of this text were produced with an AI coding agent (Claude Code, Anthropic) under the author's direction. The author set the research questions, definitions and analysis plan, and checked the outputs; the checks in \cref{tab:validation} were designed to catch errors in AI-produced analysis, and they did. \pending{author to name any other AI tools used before this pipeline}
+
+% =====================================================================================
+\section{Results}\label{sec:results}
+
+\subsection{RQ1: From registration to code}
+
+Of the \NReposTotal{} repositories, \NReposWithCommits{} (\NPctWithCommits\%) received at least one team commit and \NReposActive{} (\NPctActive\%) received team commits during the event; \NReposEmpty{} (\NPctEmpty\%) received none (\cref{fig:participation}a). Another \NReposOutsideOnly{} repositories have team commits only outside the window, almost all before the event. Of the active repositories, \NReposMatchedTrack{} (\NPctMatchedOfActive\%) could be assigned to a track.
+
+The share of repositories that became active depended on when they were created (\cref{fig:participation}b; $\chisq(\NRegistrationChiTwoDf) = \NRegistrationChiTwoChiTwo$, $p$~\NRegistrationChiTwoP, $V = \NRegistrationChiTwoV$). It was \NRegistrationSepZeroOneOneFourPct\% for repositories created between \sepone{} and \seponefour{} and \NRegistrationSepOneFiveTwoOnePct\% for those created between \sepfifteen{} and \septwentyone{}. On the evening of \batchday{}, \NBatchN{} repositories were created within \batchwindow{}, up to \NBatchMaxPerMinute{} per minute, while on earlier days no minute saw more than \NOrganicMaxPerMinute{}. We read this as a batch created by the organisers, not as individual registrations; only \NBatchActive{} of these repositories (\NBatchPctActive\%) became active. With the batch included, each week of earlier creation multiplied the odds of activity by \NRegistrationLogitOrPerWeek{} (95\% CI \NRegistrationLogitLo--\NRegistrationLogitHi); without it the effect is smaller, \NRegistrationLogitNoBatchOrPerWeek{} (\NRegistrationLogitNoBatchLo--\NRegistrationLogitNoBatchHi, $n = \NRegistrationLogitNoBatchN$).
+
+Some registrations appear to be repeated: \NNamesOnMultipleRepos{} team names occur on more than one repository. Excluding the generic name ``team'', \NDupGroupsExclGeneric{} names cover \NDupReposExclGeneric{} repositories, and in \NDupGroupsOneActive{} of these groups exactly one repository became active.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{fig_participation.pdf}
+  \caption{Participation. (a) Repositories at each stage. (b) Share of repositories that became active by creation date, with 95\% Wilson intervals; the batch created on the evening before the event is shown separately.}
+  \label{fig:participation}
+\end{figure}
+
+\subsection{RQ2: Work rhythm}
+
+Teams made \NTeamCommitsTotal{} team commits, \NWindowCommits{} of them in the event window. Activity rose in the first hour, stayed high through the afternoon, and peaked in the last hour, which holds \NPctLastHour\% of event-time commits; the busiest ten minutes were \NPeakOneZeroStart--\NPeakOneZeroEnd{} with \NPeakOneZeroCommits{} commits (\cref{fig:rhythm}a). The median active team made its first commit \NFirstCommitMinMedian{} minutes after the start (95\% CI \NFirstCommitMinLo--\NFirstCommitMinHi) and its last commit \NLastCommitMinBeforeDeadlineMedian{} minutes before the deadline (\NLastCommitMinBeforeDeadlineLo--\NLastCommitMinBeforeDeadlineHi), with a median of \NWindowCommitsPerTeamMedian{} commits (interquartile range \NWindowCommitsPerTeamQOne--\NWindowCommitsPerTeamQThree).
+
+Most teams worked throughout: \NTeamsFourplusHoursPct\% committed in at least four of the five hours and \NTeamsAllFiveHoursPct\% in all five, and \NTeamsCommitLastHourPct\% committed in the last hour. Clustering the hourly profiles gives two groups (silhouette \NRhythmSilhouetteTwo; \cref{fig:rhythm}b). A steady group of \NRhythmCOneSize{} teams (\NRhythmCOnePct\%) spread its commits evenly after the first hour. A late-surge group of \NRhythmCTwoSize{} teams (\NRhythmCTwoPct\%) made \NRhythmCTwoHOneSeven\% of its commits in the last hour. After the deadline, \NPostDeadlineCommits{} team commits from \NPostDeadlineRepos{} repositories carry timestamps between \deadline{} and \dayend.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{fig_rhythm.pdf}
+  \caption{Work rhythm. (a) Team commits per ten minutes on the event day, all branches; the shaded band is the event window. (b) Mean hourly share of each team's event-window commits in the two $k$-means clusters.}
+  \label{fig:rhythm}
+\end{figure}
+
+\subsection{RQ3: Technology choices}
+
+Python was the primary language in \NPrimaryLanguagePythonPct\% of the \NStackN{} repositories with team commits, followed by TypeScript (\NPrimaryLanguageTypeScriptPct\%) and JavaScript (\NPrimaryLanguageJavaScriptPct\%). The most common frameworks were React (\NFrameworksTopReactPct\%), FastAPI (\NFrameworksTopFastAPIPct\%), Vite (\NFrameworksTopVitePct\%) and Next.js (\NFrameworksTopNextjsPct\%). An LLM SDK appeared in \NAnyLlmSdkPct\% of repositories, the OpenAI SDK in \NLlmProvidersOpenAIPct\%, and other providers each in less than three per cent (Anthropic \NLlmProvidersAnthropicPct\%, Ollama \NLlmProvidersOllamaPct\%, Google \NLlmProvidersGooglePct\%). Engineering artefacts were common: test files in \NHasTestsPct\% of repositories (95\% CI \NHasTestsLo--\NHasTestsHi), a Dockerfile in \NHasDockerfilePct\%, a Compose file in \NHasComposePct\%, a CI workflow in \NHasCiPct\% and a deployment configuration in \NHasDeployConfigPct\% (\cref{fig:footprint}). The primary language differed between tracks ($\chisq(\NLangByTrackDf) = \NLangByTrackChiTwo$, $p$~\NLangByTrackP, $V = \NLangByTrackV$); for example, Python was the primary language in \NTracksTZeroFourPython\% of Telecom repositories and \NTracksTOneTwoPython\% of the city-simulator track (\cref{tab:tracks}).
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{fig_footprint.pdf}
+  \caption{Engineering artefacts, LLM use and agent traces in the \NStackN{} repositories with team commits (share with 95\% Wilson intervals; counts in brackets).}
+  \label{fig:footprint}
+\end{figure}
+
+\subsection{RQ4: Traces of coding agents}
+
+Agent context files were present in \NAnyAgentFilePct\% of repositories: \texttt{AGENTS.md} in \NAgentsMdPct\% (\NAgentsMdN) and \texttt{CLAUDE.md} in \NClaudeMdPct\% (\NClaudeMdN); \NOtherAgentFiles{} repositories contained other agent rule files. \NAgentSignedCommits{} commits (\NPctAgentSignedCommits\%) in \NReposAgentSignedN{} repositories carry an agent signature. Most signatures name Claude (\NAgentSignedByKindClaude{} commits) and few name Codex (\NAgentSignedByKindCodex), although Codex was the required tool. Codex appears instead in branch names: \NReposCodexBranch{} repositories have branches starting with \texttt{codex}, and \NReposPrRefsPct\% have pull-request references. We therefore treat commit signatures as evidence of each tool's default disclosure behaviour, not as a measure of use.
+
+Active repositories with an \texttt{AGENTS.md} file had more event-window commits (median \NAgentsMdAssocCommitsMedianWith{} vs.\ \NAgentsMdAssocCommitsMedianWithout; Cliff's $\delta = \NAgentsMdAssocCommitsDelta$, Holm-adjusted $p$~\NAgentsMdAssocCommitsP), more hours with commits (median \NAgentsMdAssocHoursMedianWith{} vs.\ \NAgentsMdAssocHoursMedianWithout; $\delta = \NAgentsMdAssocHoursDelta$, $p$~\NAgentsMdAssocHoursP) and more often test files (\NAgentsMdAssocTestsPctWith\% vs.\ \NAgentsMdAssocTestsPctWithout\%; $V = \NAgentsMdAssocTestsV$, $p$~\NAgentsMdAssocTestsP). These are associations: teams that set up context files may differ from others in experience or preparation. The median non-merge commit changed \NCommitSizeMedianAll{} lines (interquartile range \NCommitSizeQOneAll--\NCommitSizeQThreeAll), with similar medians for agent-signed and other commits (\NCommitSizeMedianSigned{} and \NCommitSizeMedianUnsigned); \NConventionalCommitsPct\% of commit subjects follow the conventional-commit format.
+
+\subsection{RQ5: Documentation}
+
+Of the \NReadmeWrittenN{} READMEs with written content, \NReadmeRussianPct\% are in Russian, \NReadmeEnglishPct\% in English, \NReadmeKazakhPct\% in Kazakh and \NReadmeMixedPct\% mixed (\cref{fig:language}); another \NReadmeLanguageCountsTemplate{} repositories kept only the organiser's one-line README. Kazakh-specific letters appear somewhere in \NReadmeAnyKazakhLetterPct\% of READMEs. Commit messages are mostly in Latin script (\NCommitScriptLatinPct\%), and Kazakh-specific letters occur in \NCommitScriptKazakhN{} of \NTeamCommitsTotal{} commits. READMEs are long for a five-hour event (median \NReadmeWordsMedian{} words, 95\% CI \NReadmeWordsLo--\NReadmeWordsHi; median \NReadmeHeadingsMedian{} headings); \NReadmeInstallInstructionsPct\% give run or installation instructions, \NReadmeImagesPct\% include images and \NReadmeDeployedLinkPct\% link to a deployed application.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{fig_language.pdf}
+  \caption{Language of README files and script of commit messages.}
+  \label{fig:language}
+\end{figure}
+
+\subsection{RQ6: Credential hygiene}
+
+Gitleaks' generic rule produced \NGenericFindings{} findings in \NGenericRepos{} repositories, \NGenericInDataFilesPct\% of them in data files such as the datasets provided with the tasks; we treat them as low-precision and do not report them further. Provider-specific rules produced \NProviderFindings{} findings, of which \NProviderPlaceholder{} looked like placeholders. The remaining findings occur in \NReposProviderSecretN{} repositories (\NReposProviderSecretPct\% of those with team commits), and in \NReposProviderSecretFinalN{} of them the string is still present in the final version (\cref{fig:security}a). Most are OpenAI API keys: \NOpenaiFindings{} occurrences in \NReposOpenaiKeyN{} repositories (\NReposOpenaiKeyPct\%; \NReposOpenaiKeyFinalN{} in the final version). All of them have the structural marker of OpenAI keys, and all were committed during the event window. We did not test whether any key worked.
+
+The keys sat mainly in environment files (\cref{fig:security}b): \NOpenaiKeyFilesEnvExample{} occurrences in \texttt{.env.example} and \NOpenaiKeyFilesEnv{} in \texttt{.env}. The first is a template that projects commit on purpose, so a real key placed there becomes public even when \texttt{.gitignore} excludes \texttt{.env}. This matches the association we observe: keys were more frequent in repositories whose \texttt{.gitignore} covered \texttt{.env} (\NKeyVsGitignorePctWithIgnore\% vs.\ \NKeyVsGitignorePctWithoutIgnore\%; $V = \NKeyVsGitignoreV$, $p$~\NKeyVsGitignoreP). Other hygiene signals were rare: a committed \texttt{.env} in \NEnvFileCommittedPct\%, committed \texttt{\_\_pycache\_\_} in \NPycacheCommittedPct\%, \texttt{node\_modules} in \NNodeModulesCommittedPct\% and virtual environments in \NVirtualenvCommittedPct\% of repositories; \NGitignoreCoversEnvPct\% had a \texttt{.gitignore} covering \texttt{.env}.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{fig_security.pdf}
+  \caption{Credentials in public history. (a) Repositories with findings of provider-specific rules, split by whether the string remains in the final version. (b) Files that held OpenAI key strings.}
+  \label{fig:security}
+\end{figure}
+
+\subsection{RQ7: Tracks}
+
+The education track drew the most active repositories (\NTracksTZeroSevenN), followed by finance (\NTracksTZeroTwoN) and the city simulator (\NTracksTOneTwoN); the voice-routing track drew the fewest (\NTracksTZeroNineN; \cref{tab:tracks}). Event-window commits did not differ clearly between tracks (Kruskal--Wallis $H = \NTrackCommitsKruskalH$, $p$~\NTrackCommitsKruskalP), while the share with test files ranged from \NTracksTZeroFourTests\% (Telecom) to \NTracksTOneTwoTests\% (city simulator).
+
+% =====================================================================================
+\section{Discussion}\label{sec:discussion}
+
+\paragraph{Registrations are not participants.}
+Two thirds of the repositories received no team commits. The data cannot tell whether a team did not come, could not enter, registered twice or worked elsewhere, and news reports describe people who registered but could not get in~\cite{qumash2026queue,ulys2026survival}. The batch created on the evening before the event, of which almost none became active, suggests that repository creation and seat allocation were not coupled. For organisers, creating repositories only after attendance is confirmed would make the organisation a record of participants rather than of registrations; for researchers, organiser-created populations need this distinction before any rate is interpreted.
+
+\paragraph{Working with agents under a deadline.}
+The last-hour peak and the late-surge cluster resemble deadline behaviour described for developers in general~\cite{saghi2025procrastination}, and they occur alongside steady work by most teams. Tests, Docker files and long READMEs were common in projects built in five hours. We have no baseline from comparable events without agents, so we cannot say how unusual this is; with agents writing much of the code in similar settings~\cite{baumann2026swechat}, such artefacts may be cheap to produce. We did not measure whether the tests run or pass, so their presence says nothing about quality, and quality risks of agent-written code are documented elsewhere~\cite{agarwal2026aiides,zhao2025vibesafe,deng2026vibeinsecurity}.
+
+\paragraph{Measuring agent use from repositories.}
+Commit signatures named Claude far more often than Codex, although Codex was required. A plausible reason is that tools differ in whether they sign commits by default. Studies that estimate agent adoption from trailers or author accounts, as in datasets of agent pull requests~\cite{li2025aidev}, should expect such tool-specific bias; branch names, pull-request references and context files give complementary traces, none of them complete.
+
+\paragraph{Language.}
+Documentation was written mostly in Russian and English; Kazakh appeared in a small share of READMEs and almost never in commit messages. The data do not explain this. Possible factors include the audience teams wrote for, the language of the tasks, and the language in which teams worked with the agents.
+
+\paragraph{Credentials.}
+The keys we found were committed during the event, mostly to environment files, and some remain in archived repositories whose history cannot be changed by the teams. Simple measures would have prevented most of them: repository templates with a \texttt{.gitignore} that excludes environment files and an \texttt{.env.example} that holds only placeholders, organisation-level secret scanning with push protection, and short-lived keys issued for the event. These measures follow earlier recommendations~\cite{meli2019git,krause2022pushed} and matter more when an agent writes configuration files quickly.
+
+\paragraph{Lessons for mining organiser-created repositories.}
+Three issues would have biased our results had we not checked them: template commits made by a second organiser account, commits reachable only through non-default branches or pull-request references, and one repository per registration rather than per person. As earlier work warns~\cite{kalliamvakou2014perils,hoess2025toolmatter}, such details can change basic counts, and they are easy to miss when a first analysis is produced quickly.
+
+% =====================================================================================
+\section{Threats to validity}\label{sec:threats}
+
+\paragraph{Construct validity.}
+A repository is a registration, not a person or necessarily a team. Commit counts measure activity, not effort or quality. Agent traces are partial and tool-dependent. Secret findings are strings that match known key formats; we did not test them.
+
+\paragraph{Internal validity.}
+Track labels were checked by one person against README text. The README language rule is a heuristic based on letters \pending{accuracy against hand labels}. The event window is inferred from commit and archive times and press reports, not from an official schedule. Associations with \texttt{AGENTS.md} may reflect differences between teams rather than an effect of the file.
+
+\paragraph{External validity.}
+We study one event, in one country, with one required agent. Other events differ in duration, rules and participants.
+
+\paragraph{Reliability.}
+The pipeline, from collection to every number and figure, is released; the data it starts from are public repositories that are now archived.
+
+% =====================================================================================
+\section{Ethics, data availability and use of AI tools}\label{sec:ethics}
+
+All data come from public repositories and public web pages; we accessed no private system. We did not analyse names, email addresses or other personal data: author identities were only counted, never stored, and repository names are hashed in the released data. Secret values were redacted by the scanner, never stored or printed by our code, and never tested. We informed the organisers privately about the repositories containing credentials before publication \pending{confirm after contacting the organisers}. We are not affiliated with the organisers, and this paper does not report official results of the event.
+
+The pipeline, the derived dataset with hashed identifiers, and the scripts that generate every number, table and figure are available at \url{https://github.com/tbayan/HackalemAI-Repo-Data-Mining} \pending{archived release with DOI}. AI tools were used as described in \cref{sec:methods}; the author takes responsibility for all content.
+
+% =====================================================================================
+\section{Conclusion}\label{sec:conclusion}
+
+Because the organisers of HackAlem AI created a repository for every registration, the organisation records the full path from registration to code under a common deadline and a common agent requirement. Of \NReposTotal{} registrations, \NReposActive{} produced code during the event. Most active teams worked through all five hours, a third of them concentrated their work at the end, and their repositories contain tests, Docker files, agent context files and long documentation, mostly in Russian. Strings with the structure of OpenAI keys reached the public history of \NReposOpenaiKeyN{} repositories. After the results are announced on \awardsdate{}, we plan to relate these records to the jury's decisions, and to compare rule-based and LLM-based extraction of repository features against human labels.
+
+\bibliographystyle{unsrtnat}
+\bibliography{references}
+
+\end{document}

@@ -1,0 +1,123 @@
+date,source,query,hits
+2026-09-24,crossref,What happens to all these hackathon projects continuation,6
+2026-09-24,crossref,How bad can it git characterizing secret leakage public GitHub repositories,6
+2026-09-24,crossref,SecretBench dataset software secrets,6
+2026-09-24,crossref,Grounded Copilot how programmers interact with code-generating models,6
+2026-09-24,crossref,Measuring GitHub Copilot impact on productivity,6
+2026-09-24,datacite-arxiv,vibe coding,145
+2026-09-24,datacite-arxiv,hackathon GitHub repositories,2
+2026-09-24,crossref,hackathon GitHub repositories,6
+2026-09-24,datacite-arxiv,hackathon generative AI,7
+2026-09-24,crossref,hackathon generative AI,6
+2026-09-24,datacite-arxiv,hackathon large language models,15
+2026-09-24,crossref,hackathon large language models,6
+2026-09-24,datacite-arxiv,hackathon code quality participants,2
+2026-09-24,crossref,hackathon code quality participants,6
+2026-09-24,datacite-arxiv,vibe coding,145
+2026-09-24,crossref,vibe coding,6
+2026-09-24,datacite-arxiv,agentic coding,607
+2026-09-24,crossref,agentic coding,6
+2026-09-24,datacite-arxiv,coding agents pull requests GitHub,33
+2026-09-24,crossref,coding agents pull requests GitHub,6
+2026-09-24,datacite-arxiv,AI agent authored pull requests open source,6
+2026-09-24,crossref,AI agent authored pull requests open source,6
+2026-09-24,datacite-arxiv,Claude Code agent,452
+2026-09-24,crossref,Claude Code agent,6
+2026-09-24,datacite-arxiv,OpenAI Codex coding agent,24
+2026-09-24,crossref,OpenAI Codex coding agent,6
+2026-09-24,datacite-arxiv,AGENTS.md agent context files,8
+2026-09-24,crossref,AGENTS.md agent context files,6
+2026-09-24,datacite-arxiv,AI coding assistant productivity experiment,0
+2026-09-24,crossref,AI coding assistant productivity experiment,6
+2026-09-24,datacite-arxiv,GitHub Copilot developer productivity,24
+2026-09-24,crossref,GitHub Copilot developer productivity,6
+2026-09-24,datacite-arxiv,generative AI programming education,83
+2026-09-24,crossref,generative AI programming education,6
+2026-09-24,datacite-arxiv,novice programmers large language models,23
+2026-09-24,crossref,novice programmers large language models,6
+2026-09-24,datacite-arxiv,secret leakage GitHub repositories,2
+2026-09-24,crossref,secret leakage GitHub repositories,6
+2026-09-24,datacite-arxiv,hard-coded credentials source code,4
+2026-09-24,crossref,hard-coded credentials source code,6
+2026-09-24,datacite-arxiv,API key leakage,13
+2026-09-24,crossref,API key leakage,6
+2026-09-24,datacite-arxiv,security of AI-generated code,166
+2026-09-24,crossref,security of AI-generated code,6
+2026-09-24,datacite-arxiv,vibe coding security vulnerabilities,10
+2026-09-24,crossref,vibe coding security vulnerabilities,6
+2026-09-24,datacite-arxiv,README files GitHub documentation,8
+2026-09-24,crossref,README files GitHub documentation,6
+2026-09-24,datacite-arxiv,perils of mining GitHub,1
+2026-09-24,crossref,perils of mining GitHub,6
+2026-09-24,datacite-arxiv,mining software repositories threats to validity,2
+2026-09-24,crossref,mining software repositories threats to validity,6
+2026-09-24,datacite-arxiv,large language models text annotation crowd workers,5
+2026-09-24,crossref,large language models text annotation crowd workers,6
+2026-09-24,crossref,The Impact of AI on Developer Productivity: Evidence from GitHub Copilot,6
+2026-09-24,datacite-arxiv,The Impact of AI on Developer Productivity: Evidence from GitHub Copilot,0
+2026-09-24,crossref,Measuring GitHub Copilot's impact on productivity,6
+2026-09-24,datacite-arxiv,Measuring GitHub Copilot's impact on productivity,0
+2026-09-24,crossref,A Large-Scale Survey on the Usability of AI Programming Assistants: Successes and Challenges,6
+2026-09-24,datacite-arxiv,A Large-Scale Survey on the Usability of AI Programming Assistants: Successes and Challenges,0
+2026-09-24,crossref,The Robots are Here: Navigating the Generative AI Revolution in Computing Education,6
+2026-09-24,datacite-arxiv,The Robots are Here: Navigating the Generative AI Revolution in Computing Education,0
+2026-09-24,crossref,Computing Education in the Era of Generative AI,6
+2026-09-24,datacite-arxiv,Computing Education in the Era of Generative AI,8
+2026-09-24,crossref,SWE-bench: Can Language Models Resolve Real-World GitHub Issues,6
+2026-09-24,datacite-arxiv,SWE-bench: Can Language Models Resolve Real-World GitHub Issues,0
+2026-09-24,crossref,SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering,6
+2026-09-24,datacite-arxiv,SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering,0
+2026-09-24,crossref,The Rise of AI Teammates in Software Engineering 3.0 autonomous coding agents,6
+2026-09-24,datacite-arxiv,The Rise of AI Teammates in Software Engineering 3.0 autonomous coding agents,1
+2026-09-24,crossref,ChatGPT outperforms crowd workers for text-annotation tasks PNAS,6
+2026-09-24,datacite-arxiv,ChatGPT outperforms crowd workers for text-annotation tasks PNAS,0
+2026-09-24,crossref,Pushed by Accident secret information source code repositories,6
+2026-09-24,datacite-arxiv,Pushed by Accident secret information source code repositories,1
+2026-09-24,crossref-doi,10.1145/3633453,1
+2026-09-24,crossref-doi,10.1145/3624720,1
+2026-09-24,datacite-arxiv,commit activity deadline students procrastination,0
+2026-09-24,crossref,commit activity deadline students procrastination,6
+2026-09-24,datacite-arxiv,time pressure software development commits,1
+2026-09-24,crossref,time pressure software development commits,6
+2026-09-24,datacite-arxiv,software engineering Kazakhstan,0
+2026-09-24,crossref,software engineering Kazakhstan,6
+2026-09-24,datacite-arxiv,computing education Central Asia,0
+2026-09-24,crossref,computing education Central Asia,6
+2026-09-24,datacite-arxiv,technology stack choice hackathon projects,0
+2026-09-24,crossref,technology stack choice hackathon projects,6
+2026-09-24,datacite-arxiv,multilingual README non-English GitHub repositories,0
+2026-09-24,crossref,multilingual README non-English GitHub repositories,6
+2026-09-27,crossref-doi,10.1145/3833089.3833091,1
+2026-09-27,crossref-doi,10.1145/3786580.3786992,1
+2026-09-27,crossref-doi,10.3390/bdcc8120188,1
+2026-09-27,crossref-doi,10.1145/3840295,1
+2026-09-27,crossref-doi,10.1145/3793302.3793375,1
+2026-09-27,crossref-doi,10.1145/3822180,1
+2026-09-27,crossref-doi,10.1126/sciadv.adn5290,1
+2026-09-27,crossref-doi,10.1145/3635636.3656204,1
+2026-09-27,crossref-doi,10.1007/s10664-022-10201-x,1
+2026-09-27,crossref-doi,10.1145/1584322.1584325,1
+2026-09-27,crossref-doi,10.1145/3576915.3623157,1
+2026-09-27,crossref-doi,10.1145/1401890.1401920,1
+2026-09-27,crossref-doi,10.1007/s10994-020-05877-5,1
+2026-09-27,crossref-doi,10.18653/v1/2025.acl-long.701,1
+2026-09-27,crossref-doi,10.1016/0377-0427(87)90125-7,1
+2026-09-27,crossref-doi,10.1002/9780470316801,1
+2026-09-27,crossref-doi,10.1145/3544548.3581234,1
+2026-09-27,crossref-doi,10.1109/MSR52588.2021.00020,1
+2026-09-27,crossref-doi,10.1145/3180155.3180193,1
+2026-09-27,crossref-doi,10.1007/s10664-025-10767-2,1
+2026-09-27,crossref-doi,10.1016/j.infsof.2020.106257,1
+2026-09-27,crossref-doi,10.1145/3105726.3106180,1
+2026-09-27,crossref-doi,10.1109/MSR.2009.5069475,1
+2026-09-27,crossref-doi,10.1145/3643991.3644918,1
+2026-09-27,crossref-doi,10.1145/3793302.3793349,1
+2026-09-27,crossref-doi,10.1109/ESEM56168.2023.10304853,1
+2026-09-27,crossref-doi,10.1007/s10664-021-10072-8,1
+2026-09-27,crossref-doi,10.15626/MP.2020.2625,1
+2026-09-27,semanticscholar,10.1007/s10664-025-10767-2,1
+2026-09-27,semanticscholar,10.1016/j.infsof.2020.106257,1
+2026-09-27,semanticscholar,10.1007/s10664-021-10072-8,1
+2026-09-27,semanticscholar,10.1016/0377-0427(87)90125-7,1
+2026-09-27,crossref,The need to report effect size estimates revisited. An overview of some recommended measures of effect size,6
+2026-09-27,crossref,Kelley An unbiased correlation ratio measure 1935 epsilon squared,6

@@ -1,0 +1,16 @@
+% Standalone preview of Figure 1 with the paper's fonts, colours and macros.
+% Build: pdflatex preview_architecture.tex && pdftoppm -png -r 200 preview_architecture.pdf preview
+\documentclass[border=3pt]{standalone}
+\renewcommand{\rmdefault}{ptm}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,backgrounds,calc}
+\usepackage[group-separator={,},group-minimum-digits=4,mode=text]{siunitx}
+\input{../latex/colors}
+\input{../latex/event_macros}
+\input{../latex/numbers}
+\begin{document}
+\input{architecture}
+\end{document}

@@ -1,0 +1,96 @@
+# Words and phrases the paper must not use. One case-insensitive regex per line.
+# Source: the author's list (no_AI_words.md in the repo root) plus a few additions
+# marked [extra]. checks/lint_banned_words.py applies each line with word boundaries.
+
+# --- verbs
+delv(e|es|ed|ing)
+underscor(e|es|ed|ing)
+showcas(e|es|ed|ing)
+leverag(e|es|ed|ing)
+foster(s|ed|ing)?
+align(s|ed|ing)?
+utili[sz](e|es|ed|ing|ation)
+surpass(es|ed|ing)?
+boast(s|ed|ing)?
+unlock(s|ed|ing)?
+emphasi[sz]ing
+harness(es|ed|ing)?            # [extra]
+empower(s|ed|ing)?             # [extra]
+elevat(e|es|ed|ing)            # [extra]
+streamlin(e|es|ed|ing)         # [extra]
+revolutioni[sz](e|es|ed|ing)   # [extra]
+embark(s|ed|ing)?              # [extra]
+
+# --- adjectives
+commendable
+innovative
+meticulous
+intricate
+notable
+versatile
+noteworthy
+invaluable
+pivotal
+potent
+ingenious
+comprehensive
+crucial
+realm
+tapestry
+cutting-edge
+groundbreaking
+state-of-the-art
+unparalleled
+significant
+novel                          # [extra]
+robust                         # [extra]
+seamless                       # [extra]
+holistic                       # [extra]
+multifaceted                   # [extra]
+nuanced                        # [extra]
+paramount                      # [extra]
+unprecedented                  # [extra]
+remarkable                     # [extra]
+vibrant                        # [extra]
+landscape                      # [extra]
+game-changer                   # [extra]
+ever-evolving                  # [extra]
+
+# --- adverbs and connectives
+meticulously
+reportedly
+lucidly
+innovatively
+aptly
+methodically
+excellently
+compellingly
+impressively
+undoubtedly
+strategically
+primarily
+notably
+notbly
+seamlessly
+fundamentally
+significantly
+additionally
+moreover                       # [extra]
+furthermore                    # [extra]
+
+# --- phrases
+it is worth noting that
+it is important to highlight
+plays? a crucial role in
+in the realm of
+this paper aims to
+the proposed framework
+demonstrates the effectiveness of
+provides a foundation for
+operates under real-world conditions
+particularly relevant for
+a wide range of
+a testament to                 # [extra]
+shed(s)? light on              # [extra]
+paving the way                 # [extra]
+in today's                     # [extra]

@@ -1,6 +1,6 @@
 # HackAlem AI repositories: derived dataset
 
-Derived, pseudonymised data for the paper *What Repositories Reveal About Agent-Assisted Work: 3,649 Organiser-Created Repositories from a Hackathon with a Required Coding Agent* (Bayan, 2026).
+Derived, pseudonymised data for the paper *Measuring AI Coding Agent Use from Repository Traces: Evidence from a Hackathon Where Codex Was Required* (Bayan, 2026).
 
 - **Source:** the 3,649 public GitHub repositories that the organisers of HackAlem AI (Astana, 23 September 2026) created in the organisation `BAITC-Hacks`. All of them were archived when collected.
 - **Collected:** 24 September 2026, through the GitHub REST and GraphQL APIs and full mirror clones.
@@ -14,7 +14,7 @@ Derived, pseudonymised data for the paper *What Repositories Reveal About Agent-
 | `repositories.csv` | one per repository (3,649) | Timing, activity, track, stack, artefacts, agent traces and README features, under a random identifier (`id`) |
 | `commits.csv` | one per team commit (31,955) | Commit time relative to the start, size, conventional-commit flag, script of the subject line, agent kind, and author as an ordinal within the repository |
 | `aggregates/` | | The tables behind the figures, and `credentials_aggregate.json` with the credential results (aggregates only) |
-| `recollection.csv` | one per repository | Repository name and the commit each clone ended at, so the data can be collected again. It carries no identifier and cannot be joined to the other files. |
+| `recollection.csv` | one per repository | Repository name and the commit each clone ended at, so the data can be collected again. It carries no identifier, but rows of the other files can often be matched to it through their features (see Privacy). |
 | `SHA256SUMS` | | Checksums of every file |
 
 ## Main columns of `repositories.csv`
@@ -34,8 +34,12 @@ Derived, pseudonymised data for the paper *What Repositories Reveal About Agent-
 | `gitignore_covers_env`, `env_example`, `node_modules_committed`, `virtualenv_committed`, `pycache_committed` | Repository hygiene (1/0) |
 | `agents_md`, `claude_md`, `gemini_md`, `cursor_rules`, `copilot_instructions`, `other_agent_rules` | Agent context files (1/0) |
 | `agent_branch_kinds` | Agents named at the start of branch names |
-| `signed_commits_<kind>` | Commits with an agent signature, by agent. `bot` means a generic bot account, such as the organisers' application, and is not an agent |
+| `signed_commits_<kind>` | Commits with an agent signature (co-author trailer, "generated with" line or agent service account), by agent. `bot` means a generic bot account, such as the organisers' application, and is not an agent |
+| `named_commits_<kind>` | Commits whose author or committer is named exactly after the tool (for example "Codex"), with no other signature |
+| `codex_prefix_branches`, `claude_prefix_branches` | Branches whose names start with `codex` or `claude` |
 | `readme_language`, `readme_words`, `readme_headings`, `readme_run_instructions`, `readme_deployed_link`, `readme_images`, `readme_mentions_agent_tool` | README features. Language is `russian`, `english`, `kazakh`, `mixed`, `template`, `no_readme` or `too_short` |
+| `readme_names_codex`, `readme_names_claude_code` | The tool named in README prose, not as part of a file or model name (strict) |
+| `readme_mentions_codex`, `readme_mentions_claude` | The word anywhere in the raw README (broad) |
 
 The paper (Section 4) gives the exact definitions. Its code is in `src/` and `arxiv_paper_all/analysis/`.
 
@@ -49,7 +53,7 @@ The paper (Section 4) gives the exact definitions. Its code is in `src/` and `ar
 
 ## Reproducing the paper
 
-`python arxiv_paper_all/analysis/reproduce_public.py` recomputes the headline numbers of RQ1–RQ3 from these files alone and compares them with the paper (17 of 17 match in this release). The full pipeline, which needs the clones, is `src/` followed by `arxiv_paper_all/analysis/run_analysis.py`.
+`python arxiv_paper_all/analysis/reproduce_public.py` recomputes the headline numbers on participation, work timing, agent traces, README naming and artefacts from these files alone and compares them with the paper (23 of 23 match in this release). Credential results are released only as aggregates and are not recomputed. The full pipeline, which needs the clones, is `src/` followed by `arxiv_paper_all/analysis/run_analysis.py`.
 
 ## Known limitations
 

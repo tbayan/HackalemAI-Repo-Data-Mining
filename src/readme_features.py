@@ -3,11 +3,14 @@
 Reads the root README on the default-branch HEAD of every active repo. Code
 blocks, inline code, URLs and HTML tags are removed before counting letters.
 
-Language rule (validated by hand on a sample, see data/readme_lang_sample.csv):
-- kazakh:  at least 3% of Cyrillic letters are Kazakh-specific (ә ғ қ ң ө ұ ү һ і)
-- russian: Cyrillic letters are at least half of all letters (and not kazakh)
+Language rule (to be checked against blind hand labels, see data/readme_lang_sample.csv):
+- kazakh:  Cyrillic letters are at least half of all letters, and at least 3% of them are
+           Kazakh-specific (ә ғ қ ң ө ұ ү һ і)
+- russian: Cyrillic letters are at least half of all letters, and the text is not kazakh
 - english: Latin letters are at least 80% of all letters
-- mixed:   anything else (e.g. Russian prose with long English passages)
+- mixed:   anything else (e.g. English prose with a Russian or Kazakh section)
+Run/setup instructions: a heading about installation, setup, usage or running, or a code
+block that contains a command (pip, npm, docker, uvicorn, python, ...).
 Only features are stored; README text stays in the private clones.
 """
 from __future__ import annotations
@@ -26,20 +29,32 @@ CLONE_DIR = DATA_DIR / "clones"
 TABLE = DATA_DIR / "repo_table.csv"
 OUT_FILE = DATA_DIR / "readme_features.csv"
 SAMPLE_FILE = DATA_DIR / "readme_lang_sample.csv"
+KEY_FILE = DATA_DIR / "readme_lang_sample_key.csv"
 
 KAZAKH = re.compile(r"[әғқңөұүһіӘҒҚҢӨҰҮҺІ]")
 CYRILLIC = re.compile(r"[А-Яа-яЁё]")
 LATIN = re.compile(r"[A-Za-z]")
 CODE_BLOCK = re.compile(r"```.*?```|~~~.*?~~~", re.S)
 NOISE = re.compile(r"`[^`\n]*`|https?://\S+|<[^>]+>|!\[[^\]]*\]\([^)]*\)|\[([^\]]*)\]\([^)]*\)")
-INSTALL = re.compile(r"\b(install|setup|run|quick ?start|getting started)\b|установ|запуск|орнат|іске қос|"
-                     r"npm (i|install|run)|pip install|docker(-| )compose|uvicorn|python3? \S+\.py", re.I)
+RUN_HEADING = re.compile(r"^#{1,6}\s.*(install|setup|set up|getting started|quick ?start|usage|how to run|running|"
+                         r"launch|deploy|установк|запуск|использован|орнат|іске қос)", re.I | re.M)
+RUN_COMMAND = re.compile(r"\b(pip3?|npm|pnpm|yarn|npx|docker|docker-compose|uvicorn|python3?|streamlit|make|"
+                         r"poetry|uv|go run|cargo)\b", re.I)
 DEPLOYED = re.compile(r"https?://[^\s)]*(vercel\.app|netlify\.app|onrender\.com|streamlit\.app|railway\.app|"
                       r"fly\.dev|pages\.dev|herokuapp\.com|github\.io|replit\.app|ngrok)", re.I)
 DEMO_WORD = re.compile(r"\b(demo|live|deployed)\b|демо|жив", re.I)
 VIDEO = re.compile(r"youtube\.com|youtu\.be|loom\.com|drive\.google\.com", re.I)
 IMAGE = re.compile(r"!\[[^\]]*\]\([^)]*\)|<img\s", re.I)
 AGENT_MENTION = re.compile(r"\bcodex\b|\bclaude\b|agents\.md|\bcopilot\b|\bcursor\b", re.I)
+CODEX_MENTION = re.compile(r"\bcodex\b", re.I)      # broad: anywhere in the raw README
+CLAUDE_MENTION = re.compile(r"\bclaude\b", re.I)
+# Strict self-report: the tool named in prose (code, inline code, links and markup removed), not as part of a
+# file or model name such as CLAUDE.md, gpt-5-codex, codex-mini or a codex/ branch path.
+CODEX_PROSE = re.compile(r"(?<![\w./-])codex(?![\w./-])", re.I)
+CLAUDE_CODE_PROSE = re.compile(r"(?<![\w./-])claude[\s-]*code(?![\w./-])", re.I)
+# A run command: a line inside a code block (fence line excluded) that starts with a command.
+RUN_LINE = re.compile(r"^\s*(?:\$\s*|>\s*)?(pip3?|npm|pnpm|yarn|npx|bun|node|docker(?:-compose)?|uvicorn|gunicorn|flask|"
+                      r"python3?|streamlit|make|poetry|uv|go|cargo)\b(?![.\w-])", re.I | re.M)
 
 
 def git(git_dir: Path, *args: str) -> str:
@@ -53,10 +68,8 @@ def language(prose: str) -> tuple[str, int, int, int]:
     total = cyr + la
     if total < 20:
         return "too_short", kz, cy, la
-    if cyr and kz / cyr >= 0.03:
-        return "kazakh", kz, cy, la
     if cyr / total >= 0.5:
-        return "russian", kz, cy, la
+        return ("kazakh" if kz / cyr >= 0.03 else "russian"), kz, cy, la
     if la / total >= 0.8:
         return "english", kz, cy, la
     return "mixed", kz, cy, la
@@ -74,14 +87,20 @@ def process(name: str) -> dict:
         "repo": name, "readme": int(bool(readme)), "template_only": int(template_only),
         "language": "template" if template_only else lang,
         "kazakh_letters": kz, "cyrillic_letters": cy, "latin_letters": la,
-        "words": len(prose.split()), "headings": len(re.findall(r"^#{1,6}\s", text, re.M)),
+        "words": len(prose.split()), "headings": len(re.findall(r"^#{1,6}\s", CODE_BLOCK.sub(" ", text), re.M)),
         "code_blocks": len(CODE_BLOCK.findall(text)),
-        "install_instructions": int(bool(INSTALL.search(text))),
+        "install_instructions": int(bool(RUN_HEADING.search(CODE_BLOCK.sub(" ", text))
+                                        or any(RUN_LINE.search(b.split("\n", 1)[1] if "\n" in b else "")
+                                               for b in CODE_BLOCK.findall(text)))),
         "deployed_link": int(bool(DEPLOYED.search(text))),
         "demo_mention": int(bool(DEMO_WORD.search(text))),
         "video_link": int(bool(VIDEO.search(text))),
         "images": len(IMAGE.findall(text)),
         "mentions_agent_tool": int(bool(AGENT_MENTION.search(text))),
+        "mentions_codex": int(bool(CODEX_MENTION.search(text))),
+        "mentions_claude": int(bool(CLAUDE_MENTION.search(text))),
+        "names_codex": int(bool(CODEX_PROSE.search(prose))),
+        "names_claude_code": int(bool(CLAUDE_CODE_PROSE.search(prose))),
     }
 
 
@@ -96,22 +115,34 @@ def main() -> None:
         writer.writerows(rows)
 
     # Stratified validation sample for hand-labelling (private: excerpts can contain names).
+    # Written only on request, so that a re-run never overwrites labels already made.
+    import sys
+    if "--new-sample" not in sys.argv:
+        print(f"Wrote {len(rows)} repos -> {OUT_FILE}; kept the existing validation sample")
+        return
     rng = random.Random(2026)
     by_lang: dict[str, list[dict]] = {}
     for r in rows:
         by_lang.setdefault(r["language"], []).append(r)
-    quota = {"english": 35, "russian": 35, "mixed": 15, "kazakh": 15}
+    quota = {"russian": 30, "english": 25, "kazakh": 20, "mixed": 15}
     sample = []
     for lang, k in quota.items():
         pool = by_lang.get(lang, [])
         sample += rng.sample(pool, min(k, len(pool)))
-    with SAMPLE_FILE.open("w", newline="", encoding="utf-8") as f:
-        writer = csv.writer(f)
-        writer.writerow(["repo", "auto_language", "excerpt", "human_language"])
-        for r in sample:
-            text = git(CLONE_DIR / f"{r['repo']}.git", "show", "HEAD:README.md")
-            excerpt = " ".join(NOISE.sub(" ", CODE_BLOCK.sub(" ", text)).split())[:400]
-            writer.writerow([r["repo"], r["language"], excerpt, ""])
+    # Blind labelling: the automatic label goes to a separate key file, not next to the excerpt.
+    rng.shuffle(sample)
+    with SAMPLE_FILE.open("w", newline="", encoding="utf-8") as f, KEY_FILE.open("w", newline="", encoding="utf-8") as k:
+        writer, key = csv.writer(f), csv.writer(k)
+        writer.writerow(["item", "repo", "excerpt", "human_language"])
+        key.writerow(["item", "repo", "auto_language"])
+        for i, r in enumerate(sample, 1):
+            git_dir = CLONE_DIR / f"{r['repo']}.git"
+            root = git(git_dir, "ls-tree", "--name-only", "HEAD").split("\n")
+            readme = next((p for p in root if re.fullmatch(r"readme(\.[a-z]+)?", p, re.I)), "README.md")
+            text = git(git_dir, "show", f"HEAD:{readme}")
+            excerpt = " ".join(NOISE.sub(r" \1 ", CODE_BLOCK.sub(" ", text)).split())[:1500]
+            writer.writerow([i, r["repo"], excerpt, ""])
+            key.writerow([i, r["repo"], r["language"]])
     print(f"Wrote {len(rows)} repos -> {OUT_FILE}; {len(sample)}-row validation sample -> {SAMPLE_FILE}")
 
 

@@ -1,0 +1,13 @@
+# Literal numbers allowed in the prose. Everything else must be a macro from numbers.tex.
+# Dates, times and the UTC offset are macros in main.tex (\eventdate, \eventwindow, \astanatz).
+2019   # publication years in related work
+2020
+2021
+2022
+2023
+2024
+2025
+2026
+12     # number of tracks (event site; organisers' case list)
+95     # confidence level of all intervals (method constant)
+10000  # bootstrap resamples (method constant)
