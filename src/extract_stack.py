@@ -81,6 +81,9 @@ AGENT_FILES = {
 ENV_FILE = re.compile(r"(^|/)\.env(\.[^/]*)?$")
 ENV_TEMPLATE = re.compile(r"\.(example|sample|template|dist|defaults?|tpl)$", re.I)
 TEST_FILE = re.compile(r"(^|/)(tests?|__tests__)/|(^|/)test_[^/]+\.py$|_test\.(py|go)$|\.(test|spec)\.[jt]sx?$")
+# A test definition inside a test file: pytest/unittest, Jest/Vitest/Mocha, Go.
+TEST_DEF = r"^\s*(async\s+)?def\s+test_|^\s*class\s+Test|\b(it|test|describe)\s*\(\s*['\"`]|^func\s+Test[A-Z_]"
+TEST_SOURCE = re.compile(r"\.(py|go|[jt]sx?|mjs|cjs)$")
 DEPLOY = re.compile(r"(^|/)(vercel\.json|netlify\.toml|render\.yaml|fly\.toml|Procfile|railway\.(json|toml)|app\.yaml)$")
 
 
@@ -149,6 +152,8 @@ def process(name: str) -> dict:
         if provider not in llm and git(git_dir, "grep", "-I", "-l", "-E", pattern, "HEAD", "--", *SOURCE_PATHSPEC).strip():
             llm.add(provider)
 
+    test_paths = [p for p, _ in own if TEST_FILE.search(p)]
+    test_code = [p for p in test_paths if TEST_SOURCE.search(p)]
     env_files = [p for p in paths if ENV_FILE.search(p) and not ENV_TEMPLATE.search(p)]
     gitignore = git(git_dir, "show", "HEAD:.gitignore") if ".gitignore" in paths else ""
     ignores_env = bool(re.search(r"^\s*/?(\*\*/)?\.env(\*|\.\*|\b)", gitignore, re.M) or "*.env" in gitignore)
@@ -164,7 +169,9 @@ def process(name: str) -> dict:
         "manifests": len(manifests),
         "dockerfile": int(any(re.search(r"(^|/)Dockerfile[^/]*$", p) for p in paths)),
         "compose": int(any(re.search(r"(^|/)(docker-)?compose[^/]*\.ya?ml$", p) for p in paths)),
-        "tests": int(any(TEST_FILE.search(p) for p, _ in own)),
+        "tests": int(bool(test_paths)),
+        "test_functions": int(bool(test_code) and bool(
+            git(git_dir, "grep", "-I", "-l", "-E", TEST_DEF, "HEAD", "--", *test_code[:300]).strip())),
         "ci": int(any(re.search(r"^\.github/workflows/[^/]+\.ya?ml$", p) for p in paths)),
         "deploy_config": int(any(DEPLOY.search(p) for p in paths)),
         "notebooks": sum(p.endswith(".ipynb") for p, _ in own),

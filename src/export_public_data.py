@@ -91,7 +91,7 @@ def main() -> None:
     out["track"] = r.repo.map(lab.track)
     out["track_source"] = r.repo.map(lab.track_source)
     s = stack.set_index("repo")
-    keep_stack = ["primary_language", "frameworks", "llm_sdks", "dockerfile", "compose", "tests", "ci", "deploy_config",
+    keep_stack = ["primary_language", "frameworks", "llm_sdks", "dockerfile", "compose", "tests", "test_functions", "ci", "deploy_config",
                   "gitignore_covers_env", "env_example", "node_modules_committed", "virtualenv_committed", "pycache_committed",
                   "agents_md", "claude_md", "gemini_md", "cursor_rules", "copilot_instructions", "other_agent_rules"]
     for col in keep_stack:
@@ -110,11 +110,19 @@ def main() -> None:
     for kind in ["claude", "codex"]:
         out[f"named_commits_{kind}"] = r.repo.map(named[named.agent_kind == kind].groupby("repo").size()).fillna(0).astype(int)
     rd = readme.set_index("repo")
-    for col in ["language", "words", "headings", "install_instructions", "deployed_link", "images", "mentions_agent_tool",
+    for col in ["language", "words", "headings", "install_instructions", "deployed_link", "images", "kazakh_letters", "mentions_agent_tool",
                 "names_codex", "names_claude_code", "mentions_codex", "mentions_claude"]:
         v = r.repo.map(rd[col])
         out[f"readme_{col}"] = v.astype("Int64") if pd.api.types.is_numeric_dtype(rd[col]) else v
     out = out.rename(columns={"readme_install_instructions": "readme_run_instructions"})
+    # Approach of each track-labelled active repository, coded from README and file list by an LLM (src/llm_codebook.py).
+    answers = {}
+    for line in (DATA / "llm_codebook" / "responses.jsonl").open(encoding="utf-8"):
+        rec = json.loads(line)
+        if rec["answer"].strip():
+            answers[rec["repo"]] = json.loads(rec["answer"])
+    for key in ["core_method", "secondary_method", "llm_role", "interface", "evaluation", "provided_data", "approach"]:
+        out[f"approach_{key}"] = r.repo.map(lambda n: answers.get(n, {}).get(key))
     OUT.mkdir(exist_ok=True)
     out.sort_values("id").to_csv(OUT / "repositories.csv", index=False)
 

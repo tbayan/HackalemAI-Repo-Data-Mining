@@ -1,5 +1,5 @@
 # Words and phrases the paper must not use. One case-insensitive regex per line.
-# Source: the author's list (no_AI_words.md in the repo root) plus a few additions
+# Source: the author's style list plus a few additions
 # marked [extra]. checks/lint_banned_words.py applies each line with word boundaries.
 
 # --- verbs

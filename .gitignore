@@ -12,3 +12,7 @@ arxiv_paper_all/latex/*.bbl
 arxiv_paper_all/latex/*.blg
 arxiv_paper_all/latex/*.out
 arxiv_paper_all/latex/*.toc
+
+# personal files, never commit
+no_AI_words.md
+talgar's_paper.md
