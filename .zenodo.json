@@ -1,0 +1,17 @@
+{
+  "title": "HackAlem AI repository study: pseudonymised data and code",
+  "upload_type": "dataset",
+  "access_right": "open",
+  "license": "cc-by-4.0",
+  "description": "<p>Pseudonymised dataset, analysis pipeline and paper sources for the study \"Measuring AI Coding Agent Use from Repository Traces: Evidence from a Hackathon Where Codex Was Required\", based on the 3,649 organiser-created repositories of the HackAlem AI hackathon (Astana, 23 September 2026). Credential findings are included only as aggregates.</p>",
+  "creators": [
+    {
+      "name": "Bayan, Talgar",
+      "affiliation": "School of Computing and Artificial Intelligence (SCAI), Nazarbayev University; University of Manchester"
+    }
+  ],
+  "keywords": ["AI coding agents", "mining software repositories", "hackathons", "OpenAI Codex", "credential leakage"],
+  "related_identifiers": [
+    {"identifier": "https://osf.io/bm3je", "relation": "isSupplementedBy", "resource_type": "other"}
+  ]
+}
