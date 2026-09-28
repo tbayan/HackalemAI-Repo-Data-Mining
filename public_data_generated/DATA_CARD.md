@@ -5,7 +5,7 @@ Derived, pseudonymised data for the paper *Measuring AI Coding Agent Use from Re
 - **Source:** the 3,649 public GitHub repositories that the organisers of HackAlem AI (Astana, 23 September 2026) created in the organisation `BAITC-Hacks`. All of them were archived when collected.
 - **Collected:** 24 September 2026, through the GitHub REST and GraphQL APIs and full mirror clones.
 - **Licence:** CC BY 4.0 for this derived data. No source code, README text or commit message is redistributed.
-- **Citation:** see the paper. The archived release with its DOI is pending.
+- **Citation:** Bayan, T. (2026). *HackAlem AI repository study: pseudonymised data and code* (v1.0.2). Zenodo. https://doi.org/10.5281/zenodo.23021335
 
 ## Files
 
