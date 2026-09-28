@@ -1708,6 +1708,8 @@
         "lo": 85.7,
         "hi": 90.2
       },
+      "sdk_kappa": 0.63,
+      "small_cells_rare": 24,
       "no_sdk_given_no_llm": {
         "n": 157,
         "of": 193,
