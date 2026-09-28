@@ -16,3 +16,7 @@ arxiv_paper_all/latex/*.toc
 # personal files, never commit
 no_AI_words.md
 talgar's_paper.md
+reviews/
+versions/
+writing/
+arxiv_paper_all/literature/notes/

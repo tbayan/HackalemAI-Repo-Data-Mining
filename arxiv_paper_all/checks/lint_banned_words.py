@@ -10,7 +10,7 @@ import sys
 from pathlib import Path
 
 PAPER = Path(__file__).resolve().parent.parent
-BANNED = PAPER / "writing" / "banned_words.txt"
+BANNED = PAPER / "writing" / "banned_words.txt"  # the author's private list; the check is skipped without it
 TEX_GLOBS = ["latex/*.tex", "latex/sections/*.tex", "figures/*.tex"]
 SKIP_FILES = {"numbers.tex"}
 
@@ -30,6 +30,9 @@ def load_patterns() -> list[tuple[str, re.Pattern]]:
 
 
 def main() -> int:
+    if not BANNED.exists():
+        print("banned-word check: skipped (no word list)")
+        return 0
     patterns = load_patterns()
     hits = []
     for glob in TEX_GLOBS:

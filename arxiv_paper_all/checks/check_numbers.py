@@ -2,7 +2,7 @@
 
 Data numbers must come from macros in latex/numbers.tex. Literal numbers that
 are not data (years, "12 tracks", event times) must be listed with a source in
-writing/allowed_literals.txt. Table and figure files are generated, so only
+checks/allowed_literals.txt. Table and figure files are generated, so only
 latex/sections/*.tex and latex/main.tex are scanned.
 """
 from __future__ import annotations
@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 
 PAPER = Path(__file__).resolve().parent.parent
-ALLOWED = PAPER / "writing" / "allowed_literals.txt"
+ALLOWED = PAPER / "checks" / "allowed_literals.txt"
 FILES = [PAPER / "latex" / "main.tex", *sorted((PAPER / "latex" / "sections").glob("*.tex"))]
 
 COMMENT = re.compile(r"(?<!\\)%.*$")
