@@ -76,6 +76,22 @@
       "all_before_event": 194,
       "prearchived": 157
     },
+    "pre_event_commits": {
+      "prearchived": {
+        "n": 157,
+        "of": 446,
+        "pct": 35.2,
+        "lo": 30.9,
+        "hi": 39.7
+      },
+      "open": {
+        "n": 210,
+        "of": 3203,
+        "pct": 6.6,
+        "lo": 5.8,
+        "hi": 7.5
+      }
+    },
     "matched_track": {
       "n": 984,
       "of": 1057,
@@ -232,6 +248,16 @@
       "repos_excl_generic": 480,
       "groups_one_active": 146,
       "generic_team_repos": 104
+    },
+    "inactive": {
+      "n": 2592,
+      "organiser": {
+        "n": 1472,
+        "of": 2592,
+        "pct": 56.8,
+        "lo": 54.9,
+        "hi": 58.7
+      }
     },
     "authors": {
       "sum": 2740,
@@ -694,6 +720,7 @@
         "tests_with": 95.7,
         "tests_without": 82.7,
         "tests_p": "< 0.001",
+        "tests_v": 0.18,
         "tests_adjusted": {
           "or": 3.51,
           "lo": 1.99,
@@ -1024,8 +1051,9 @@
           },
           "p": "= 0.174"
         },
-        "pooled_signed": 130,
-        "pooled_unsigned": 136
+        "pooled_repos": 211,
+        "pooled_signed": 129,
+        "pooled_unsigned": 112
       }
     }
   },
@@ -1226,6 +1254,13 @@
       "lo": 84.9,
       "hi": 88.9
     },
+    "test_functions": {
+      "n": 900,
+      "of": 1057,
+      "pct": 85.1,
+      "lo": 82.9,
+      "hi": 87.2
+    },
     "dockerfile": {
       "n": 352,
       "of": 1057,
@@ -1377,7 +1412,7 @@
     "tracks": {
       "t01": {
         "n": 74,
-        "commits": 25,
+        "commits": 25.5,
         "tests": 90.5,
         "python": 83.8,
         "kazakh": 2.7
@@ -1405,10 +1440,10 @@
       },
       "t05": {
         "n": 80,
-        "commits": 22,
-        "tests": 91.2,
+        "commits": 22.5,
+        "tests": 91.3,
         "python": 67.5,
-        "kazakh": 1.2
+        "kazakh": 1.3
       },
       "t06": {
         "n": 113,
@@ -1477,6 +1512,307 @@
       "n": 984,
       "median_min": 16,
       "median_max": 31
+    },
+    "solutions": {
+      "n": 984,
+      "pairs_within": 46522,
+      "traced": {
+        "n": 555,
+        "of": 984,
+        "pct": 56.4,
+        "lo": 53.3,
+        "hi": 59.5
+      },
+      "deps": {
+        "within": 0.131,
+        "across": 0.082,
+        "ratio": 1.60,
+        "p": "= 0.001",
+        "median_items": 14,
+        "with_within": 0.158,
+        "with_across": 0.105,
+        "with_excess": 0.054,
+        "without_within": 0.107,
+        "without_across": 0.062,
+        "without_excess": 0.045,
+        "status_p": "= 0.464"
+      },
+      "paths": {
+        "within": 0.034,
+        "across": 0.025,
+        "ratio": 1.34,
+        "p": "= 0.001",
+        "median_items": 69,
+        "with_within": 0.029,
+        "with_across": 0.023,
+        "with_excess": 0.007,
+        "without_within": 0.046,
+        "without_across": 0.033,
+        "without_excess": 0.013,
+        "status_p": "= 0.001"
+      },
+      "headings": {
+        "within": 0.031,
+        "across": 0.025,
+        "ratio": 1.23,
+        "p": "= 0.001",
+        "median_items": 17,
+        "with_within": 0.030,
+        "with_across": 0.024,
+        "with_excess": 0.006,
+        "without_within": 0.032,
+        "without_across": 0.027,
+        "without_excess": 0.006,
+        "status_p": "= 0.785"
+      },
+      "blobs": {
+        "within": 0.003,
+        "across": 0.000,
+        "ratio": 65.26,
+        "p": "= 0.001",
+        "median_items": 32,
+        "with_within": 0.002,
+        "with_across": 0.000,
+        "with_excess": 0.002,
+        "without_within": 0.005,
+        "without_across": 0.000,
+        "without_excess": 0.005,
+        "status_p": "= 0.022"
+      },
+      "shared_files": {
+        "one_track": 28,
+        "several_tracks": 185
+      },
+      "identical_code_same_track": {
+        "n": 181,
+        "of": 984,
+        "pct": 18.4,
+        "lo": 16.1,
+        "hi": 20.9
+      },
+      "identical_code_other_track": {
+        "n": 139,
+        "of": 984,
+        "pct": 14.1,
+        "lo": 12.1,
+        "hi": 16.4
+      }
+    },
+    "approach": {
+      "n": 984,
+      "model": "deepseek-flash",
+      "first": "2026-09-28",
+      "last": "2026-09-28",
+      "core": {
+        "algorithm": {
+          "n": 516,
+          "of": 984,
+          "pct": 52.4,
+          "lo": 49.3,
+          "hi": 55.5
+        },
+        "llm_prompt": {
+          "n": 219,
+          "of": 984,
+          "pct": 22.3,
+          "lo": 19.8,
+          "hi": 25.0
+        },
+        "llm_agent": {
+          "n": 132,
+          "of": 984,
+          "pct": 13.4,
+          "lo": 11.4,
+          "hi": 15.7
+        },
+        "ml_model": {
+          "n": 81,
+          "of": 984,
+          "pct": 8.2,
+          "lo": 6.7,
+          "hi": 10.1
+        },
+        "pretrained": {
+          "n": 30,
+          "of": 984,
+          "pct": 3.0,
+          "lo": 2.1,
+          "hi": 4.3
+        },
+        "unclear": {
+          "n": 6,
+          "of": 984,
+          "pct": 0.6,
+          "lo": 0.3,
+          "hi": 1.3
+        }
+      },
+      "pattern": {
+        "explains": {
+          "n": 412,
+          "of": 984,
+          "pct": 41.9,
+          "lo": 38.8,
+          "hi": 45.0
+        },
+        "llm_task": {
+          "n": 350,
+          "of": 984,
+          "pct": 35.6,
+          "lo": 32.6,
+          "hi": 38.6
+        },
+        "no_llm": {
+          "n": 193,
+          "of": 984,
+          "pct": 19.6,
+          "lo": 17.3,
+          "hi": 22.2
+        },
+        "other": {
+          "n": 29,
+          "of": 984,
+          "pct": 2.9,
+          "lo": 2.1,
+          "hi": 4.2
+        }
+      },
+      "web_app": {
+        "n": 925,
+        "of": 984,
+        "pct": 94.0,
+        "lo": 92.3,
+        "hi": 95.3
+      },
+      "evaluation": {
+        "n": 345,
+        "of": 984,
+        "pct": 35.1,
+        "lo": 32.1,
+        "hi": 38.1
+      },
+      "by_track": {
+        "chi2": 2029.7,
+        "df": 55,
+        "p": "< 0.001",
+        "v": 0.64,
+        "n": 984,
+        "cells_expected_below5": 28,
+        "cells": 72
+      },
+      "briefs_top75": 8,
+      "sdk_given_llm": {
+        "n": 692,
+        "of": 785,
+        "pct": 88.2,
+        "lo": 85.7,
+        "hi": 90.2
+      },
+      "no_sdk_given_no_llm": {
+        "n": 157,
+        "of": 193,
+        "pct": 81.3,
+        "lo": 75.3,
+        "hi": 86.2
+      },
+      "tracks": {
+        "t01": {
+          "n": 74,
+          "top_method": "trained model",
+          "top_share": 91.9,
+          "effective_methods": 1.4,
+          "llm_task_pct": 2.7,
+          "libraries": "joblib (53%); scikit-learn (74%)"
+        },
+        "t02": {
+          "n": 115,
+          "top_method": "rules or algorithm",
+          "top_share": 99.1,
+          "effective_methods": 1.1,
+          "llm_task_pct": 0.9,
+          "libraries": "networkx (96%); pyarrow (96%)"
+        },
+        "t03": {
+          "n": 89,
+          "top_method": "rules or algorithm",
+          "top_share": 75.3,
+          "effective_methods": 2.0,
+          "llm_task_pct": 22.5,
+          "libraries": "python-multipart (36%)"
+        },
+        "t04": {
+          "n": 46,
+          "top_method": "rules or algorithm",
+          "top_share": 82.6,
+          "effective_methods": 1.7,
+          "llm_task_pct": 15.2,
+          "libraries": "pandas (96%); numpy (91%)"
+        },
+        "t05": {
+          "n": 80,
+          "top_method": "rules or algorithm",
+          "top_share": 83.8,
+          "effective_methods": 1.7,
+          "llm_task_pct": 0.0,
+          "libraries": "openpyxl (72%); streamlit (28%)"
+        },
+        "t06": {
+          "n": 113,
+          "top_method": "rules or algorithm",
+          "top_share": 82.3,
+          "effective_methods": 1.9,
+          "llm_task_pct": 15.0,
+          "libraries": "--"
+        },
+        "t07": {
+          "n": 145,
+          "top_method": "LLM prompt",
+          "top_share": 79.3,
+          "effective_methods": 1.8,
+          "llm_task_pct": 94.5,
+          "libraries": "--"
+        },
+        "t08": {
+          "n": 65,
+          "top_method": "LLM prompt",
+          "top_share": 47.7,
+          "effective_methods": 2.8,
+          "llm_task_pct": 60.0,
+          "libraries": "pyannote.audio (55%); faster-whisper (77%)"
+        },
+        "t09": {
+          "n": 29,
+          "top_method": "LLM prompt",
+          "top_share": 65.5,
+          "effective_methods": 2.1,
+          "llm_task_pct": 96.6,
+          "libraries": "pydantic-settings (28%)"
+        },
+        "t10": {
+          "n": 71,
+          "top_method": "LLM agent",
+          "top_share": 70.4,
+          "effective_methods": 2.2,
+          "llm_task_pct": 88.7,
+          "libraries": "pypdf (28%); python-docx (31%)"
+        },
+        "t11": {
+          "n": 42,
+          "top_method": "LLM agent",
+          "top_share": 54.8,
+          "effective_methods": 2.7,
+          "llm_task_pct": 78.6,
+          "libraries": "pypdf (38%); python-docx (60%)"
+        },
+        "t12": {
+          "n": 115,
+          "top_method": "rules or algorithm",
+          "top_share": 97.4,
+          "effective_methods": 1.1,
+          "llm_task_pct": 2.6,
+          "libraries": "eslint-config-next (25%); next (31%)"
+        }
+      }
     }
   },
   "rq4": {
@@ -1680,7 +2016,27 @@
     },
     "readme_sample": {
       "n": 81,
-      "labelled": 0
+      "labelled": 80,
+      "agree": 69,
+      "kappa": 0.80,
+      "agree_pct": 86.3,
+      "weighted_acc": 98,
+      "agree_russian": {
+        "n": 29,
+        "of": 29
+      },
+      "agree_english": {
+        "n": 22,
+        "of": 25
+      },
+      "agree_kazakh": {
+        "n": 16,
+        "of": 20
+      },
+      "agree_mixed": {
+        "n": 2,
+        "of": 6
+      }
     },
     "archive_later": {
       "n": 2,
@@ -1695,7 +2051,7 @@
   },
   "tracks_count": 12,
   "literature": {
-    "searches": 120,
+    "searches": 122,
     "screened": 66
   }
 }

@@ -29,6 +29,27 @@ PURPLE = "#CC79A7"
 SKY = "#56B4E9"         # label directly: contrast 2.31:1 on white
 SERIES = [BLUE, VERMILLION, GREEN, ORANGE, PURPLE, SKY]
 
+# Pastel fill / outline pairs (the draw.io palette used in block diagrams such as the Transformer figure).
+# Every figure, including Fig. 1, uses these pairs: soft fills with a darker outline of the same hue.
+PAIRS = {
+    "blue":   ("#DAE8FC", "#6C8EBF"),   # main series; Codex
+    "orange": ("#FFE6CC", "#D79B00"),   # Claude Code
+    "red":    ("#F8CECC", "#B85450"),   # exceptions and exposure (archived before the event, the deadline, still present)
+    "grey":   ("#F5F5F5", "#666666"),   # context (the evening batch, strings only in history)
+    "green":  ("#D5E8D4", "#82B366"),
+    "yellow": ("#FFF2CC", "#D6B656"),
+    "purple": ("#E1D5E7", "#9673A6"),
+}
+
+
+def fill(name: str) -> str:
+    return PAIRS[name][0]
+
+
+def line(name: str) -> str:
+    return PAIRS[name][1]
+
+
 GRAY = "#9A9A9A"        # context / de-emphasised data
 LIGHT = "#D9D9D9"
 TINT = "#EEF3F8"        # background band (e.g. the event window)

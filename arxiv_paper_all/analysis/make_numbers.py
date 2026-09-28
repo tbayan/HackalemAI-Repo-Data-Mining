@@ -45,7 +45,7 @@ def render(value) -> str | None:
     if isinstance(value, Decimal):
         return rf"\num{{{value}}}"
     if isinstance(value, str):
-        return value.replace("_", r"\_")
+        return value.replace("_", r"\_").replace("%", r"\%")
     return None
 
 

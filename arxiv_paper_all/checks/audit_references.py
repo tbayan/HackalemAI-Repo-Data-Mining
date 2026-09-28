@@ -34,6 +34,13 @@ UA = {"User-Agent": "hackalem-reference-audit/1.0 (mailto:talgar.bayan@gmail.com
 
 
 # ------------------------------------------------------------------ bib parsing
+
+# Differences from the registry that are deliberate (literature/build_bib.py), with the reason.
+KNOWN = {
+    "10.1007/s10664-018-9660-3": ("year 2018", "dated by its journal issue, 24(3) 2019; online 2018"),
+    "10.48550/arxiv.2010.03525": ("authors 42 vs 43", "DataCite lists Davide Taibi twice"),
+}
+
 def parse_bib(text: str) -> list[dict]:
     entries = []
     for m in re.finditer(r"@(\w+)\s*\{\s*([^,\s]+)\s*,", text):
@@ -193,9 +200,13 @@ def main() -> int:
                 n_ok = len(ba) == len(ra)
                 problems = [p for p, ok in [(f"title {t:.2f}", t >= 0.95), ("first author", first),
                                             (f"year {rec['year']}", year_ok), (f"authors {len(ba)} vs {len(ra)}", n_ok)] if not ok]
+                known = KNOWN.get(doi.lower())
+                if known and problems == [known[0]]:
+                    problems, note = [], f"known: {known[1]}"
+                else:
+                    note = "; ".join(problems)
                 row.update(registry=rec["source"], title_registry=rec["title"], venue=rec["venue"],
-                           title_sim=f"{t:.2f}", status="ok" if not problems else "CHECK",
-                           note="; ".join(problems))
+                           title_sim=f"{t:.2f}", status="ok" if not problems else "CHECK", note=note)
             if doi.lower().startswith("10.48550/"):
                 try:
                     pv = published_versions(e.get("title", ""))

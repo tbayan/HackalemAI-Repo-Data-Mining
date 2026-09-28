@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import json
 import math
+from decimal import ROUND_HALF_UP, Decimal
 import re
 import sys
 from datetime import datetime, timedelta, timezone
@@ -39,6 +40,7 @@ TABLES = PAPER / "tables"
 OUT = PAPER / "analysis" / "facts_paper.json"
 sys.path.insert(0, str(ROOT / "src"))
 from plot_bilingual_charts import CASE_FIXES, CASES  # noqa: E402
+import solution_similarity as ss  # noqa: E402
 
 TZ = timezone(timedelta(hours=5))
 START = datetime(2026, 9, 23, 13, 0, tzinfo=TZ).timestamp()
@@ -51,11 +53,23 @@ F: dict = {}
 
 
 # ------------------------------------------------------------------ helpers
+def rhu(value, places: int = 1):
+    """Round half up (86.25 -> 86.3); Python's round() rounds half to even."""
+    q = Decimal(str(float(value))).quantize(Decimal(1).scaleb(-places), rounding=ROUND_HALF_UP)
+    return int(q) if places == 0 else float(q)
+
+
+def num(value):
+    """A median that can end in .5: an int when whole, else one decimal."""
+    v = rhu(value, 1)
+    return int(v) if v == int(v) else v
+
+
 class Fixed(float):
     """A rounded float that keeps its trailing zeros in facts_paper.json (1.10, not 1.1)."""
 
     def __new__(cls, value, places: int):
-        obj = super().__new__(cls, round(float(value), places))
+        obj = super().__new__(cls, rhu(value, places))
         obj.places = places
         return obj
 
@@ -77,14 +91,14 @@ def to_json(obj) -> str:
 
 
 def pct(part, whole) -> float:
-    return round(100 * part / whole, 1) if whole else 0.0
+    return rhu(100 * part / whole, 1) if whole else 0.0
 
 
 def prop(part, whole) -> dict:
     """n, %, Wilson 95% CI and the denominator."""
     part, whole = int(part), int(whole)
     lo, hi = proportion_confint(part, whole, method="wilson") if whole else (0, 0)
-    return {"n": part, "of": whole, "pct": pct(part, whole), "lo": round(100 * lo, 1), "hi": round(100 * hi, 1)}
+    return {"n": part, "of": whole, "pct": pct(part, whole), "lo": rhu(100 * lo, 1), "hi": rhu(100 * hi, 1)}
 
 
 def fmt_p(p: float) -> str:
@@ -93,7 +107,7 @@ def fmt_p(p: float) -> str:
 
 def med_iqr(values) -> dict:
     v = pd.Series(values, dtype=float)
-    return {"median": int(round(v.median())), "q1": int(round(v.quantile(0.25))), "q3": int(round(v.quantile(0.75)))}
+    return {"median": rhu(v.median(), 0), "q1": rhu(v.quantile(0.25), 0), "q3": rhu(v.quantile(0.75), 0)}
 
 
 def cliffs_delta(a, b) -> Fixed:
@@ -106,7 +120,7 @@ def cliffs_delta(a, b) -> Fixed:
 def chi2_test(table) -> dict:
     chi2, p, dof, expected = stats.chi2_contingency(table, correction=False)
     v = math.sqrt(chi2 / (table.values.sum() * (min(table.shape) - 1)))
-    return {"chi2": round(chi2, 1), "df": int(dof), "p": fmt_p(p), "v": r2(v), "n": int(table.values.sum()),
+    return {"chi2": rhu(chi2, 1), "df": int(dof), "p": fmt_p(p), "v": r2(v), "n": int(table.values.sum()),
             "cells_expected_below5": int((expected < 5).sum()), "cells": int(expected.size)}
 
 
@@ -178,6 +192,10 @@ outside = repos.loc[repos["any"] & ~repos.active, "repo"]
 last_ct = commits.groupby("repo").ctime.max()
 P["outside_only"] = {"n": len(outside), "all_before_event": int((last_ct.reindex(outside) < START).sum()),
                      "prearchived": int((repos["any"] & ~repos.active & repos.prearchived).sum())}
+first_ct = commits.groupby("repo").ctime.min()
+early = repos.repo.map(first_ct).lt(START)
+P["pre_event_commits"] = {"prearchived": prop(early[repos.prearchived].sum(), repos.prearchived.sum()),
+                          "open": prop(early[~repos.prearchived].sum(), (~repos.prearchived).sum())}
 act = repos[repos.active]
 P["matched_track"] = prop(act.track.notna().sum(), NA)
 P["track_unclear"] = int(act.track.isna().sum())
@@ -206,7 +224,7 @@ P["creation_chi2_open_nonbatch"] = chi2_test(pd.crosstab(cg.cgroup, cg.active))
 naive = repos.assign(g=grp)
 naive = naive[naive.g != "sep23"]
 P["creation_chi2_all"] = chi2_test(pd.crosstab(naive.g, naive.active))
-P["active_gap_pp"] = round(P["active_of_open_nonbatch"]["pct"] - P["active"]["pct"], 1)
+P["active_gap_pp"] = rhu(P["active_of_open_nonbatch"]["pct"] - P["active"]["pct"], 1)
 
 team_name = repos.repo.str.replace(r"^hack-[0-9a-f]{8}-", "", regex=True)
 dup = repos.assign(team_name=team_name).groupby("team_name").agg(n=("repo", "size"), active=("active", "sum"))
@@ -217,7 +235,9 @@ P["repeated_names"] = {"names": int((dup.n > 1).sum()), "groups_excl_generic": l
 
 wc_all = commits[(commits.ctime >= START) & (commits.ctime < END)]
 authors = wc_all[(wc_all.author_bot == 0) & wc_all.repo.isin(ACTIVE)].groupby("repo").author_key.nunique()
-P["authors"] = {"sum": int(authors.sum()), "median": int(authors.median()),
+inactive = repos[~repos.active]
+P["inactive"] = {"n": len(inactive), "organiser": prop((inactive.prearchived | inactive.batch).sum(), len(inactive))}
+P["authors"] = {"sum": int(authors.sum()), "median": num(authors.median()),
                 "one": int((authors == 1).sum()), "two": int((authors == 2).sum()), "three": int((authors == 3).sum()),
                 "four_plus": int((authors >= 4).sum())}
 F["rq1"] = P
@@ -350,11 +370,12 @@ raw = [stats.mannwhitneyu(w.window_commits, wo.window_commits).pvalue,
 holm = multipletests(raw, method="holm")[1]
 T["agents_md_assoc"] = {
     "n_with": len(w), "n_without": len(wo),
-    "commits_with": int(w.window_commits.median()), "commits_without": int(wo.window_commits.median()),
+    "commits_with": num(w.window_commits.median()), "commits_without": num(wo.window_commits.median()),
     "commits_delta": cliffs_delta(w.window_commits, wo.window_commits), "commits_p": fmt_p(holm[0]),
-    "hours_with": int(w.hours_active.median()), "hours_without": int(wo.hours_active.median()),
+    "hours_with": num(w.hours_active.median()), "hours_without": num(wo.hours_active.median()),
     "hours_delta": cliffs_delta(w.hours_active, wo.hours_active), "hours_p": fmt_p(holm[1]),
     "tests_with": pct(w.tests.sum(), len(w)), "tests_without": pct(wo.tests.sum(), len(wo)), "tests_p": fmt_p(holm[2]),
+    "tests_v": chi2_test(tab)["v"],
     "tests_adjusted": logit_or(sa.tests, pd.DataFrame({"agents_md": sa.agents_md, "log_commits": np.log1p(sa.window_commits)}), "agents_md"),
 }
 # README naming of a tool (exploratory, added after review). Strict: the tool named in README prose, not as part
@@ -390,16 +411,21 @@ nmc["signed"] = nmc.index.isin(sig.index)
 def size_test(df) -> dict:
     per = df.groupby(["repo", "signed"]).code_lines.median().unstack().dropna()
     diff = per[True] - per[False]
-    return {"repos": len(per), "median_signed": int(round(per[True].median())),
-            "median_unsigned": int(round(per[False].median())), "signed_larger": prop((diff > 0).sum(), len(per)),
+    return {"repos": len(per), "median_signed": num(per[True].median()),
+            "median_unsigned": num(per[False].median()), "signed_larger": prop((diff > 0).sum(), len(per)),
             "p": fmt_p(stats.wilcoxon(per[True], per[False]).pvalue)}
 
 
 n_signed = nmc[nmc.signed].groupby("repo").size()
 T["commit_size"] = {"all": size_test(nmc), "min3": size_test(nmc[nmc.repo.isin(n_signed[n_signed >= 3].index)]),
                     "claude": size_test(nmc[~nmc.signed | (nmc.agent_kind == "claude")]),
-                    "pooled_signed": int(nmc[nmc.signed].code_lines.median()),
-                    "pooled_unsigned": int(nmc[~nmc.signed].code_lines.median())}
+                    }
+# pooled over the commits of the repositories that have both kinds (the set of the Wilcoxon test)
+both = nmc.groupby("repo").signed.agg(["any", "all"])
+both = nmc[nmc.repo.isin(both[both["any"] & ~both["all"]].index)]
+T["commit_size"]["pooled_repos"] = int(both.repo.nunique())
+T["commit_size"]["pooled_signed"] = num(both[both.signed].code_lines.median())
+T["commit_size"]["pooled_unsigned"] = num(both[~both.signed].code_lines.median())
 Q["traces"] = T
 F["rq2"] = Q
 
@@ -415,7 +441,7 @@ sdk = s.llm_sdks.fillna("")
 R["any_llm"] = prop((sdk != "").sum(), NA)
 provs = sdk.str.split(";").explode()
 R["llm_providers"] = {re.sub(r"[^A-Za-z0-9]", "", k): prop(v, NA) for k, v in provs[provs != ""].value_counts().items()}
-for flag in ["tests", "dockerfile", "compose", "ci", "deploy_config"]:
+for flag in ["tests", "test_functions", "dockerfile", "compose", "ci", "deploy_config"]:
     R[flag] = prop(s[flag].sum(), NA)
 clean = set(act.repo) - set(pre_c.repo) - set(post.repo)
 sc = s.loc[s.index.isin(clean)]
@@ -446,7 +472,7 @@ for code, *m_ in CASES:
     sub = tr[tr.track == code]
     wr = sub[sub.language.isin(["russian", "english", "kazakh", "mixed"])]
     rows.append({"track": code, "sector_en": m_[1], "partner_en": m_[3], "repos": len(sub),
-                 "median_window_commits": int(sub.window_commits.median()),
+                 "median_window_commits": num(sub.window_commits.median()),
                  "tests_pct": pct(sub.tests.sum(), len(sub)), "python_pct": pct((sub.primary_language == "Python").sum(), len(sub)),
                  "readme_russian_pct": pct((wr.language == "russian").sum(), len(wr)),
                  "readme_kazakh_pct": pct((wr.language == "kazakh").sum(), len(wr)), "readme_written": len(wr)})
@@ -457,10 +483,90 @@ lang3 = tr.primary_language.where(tr.primary_language.isin(["Python", "TypeScrip
 R["language_by_track"] = chi2_test(pd.crosstab(tr.track, lang3))
 kw = stats.kruskal(*[tr[tr.track == code].window_commits for code, *_ in CASES])
 k_, n_ = len(CASES), len(tr)
-R["commits_by_track"] = {"h": round(kw.statistic, 1), "df": k_ - 1, "p": fmt_p(kw.pvalue),
+R["commits_by_track"] = {"h": rhu(kw.statistic, 1), "df": k_ - 1, "p": fmt_p(kw.pvalue),
                          "eps2": r2(kw.statistic / (n_ - 1)), "n": n_,
-                         "median_min": int(min(r_["median_window_commits"] for r_ in rows)),
-                         "median_max": int(max(r_["median_window_commits"] for r_ in rows))}
+                         "median_min": min(r_["median_window_commits"] for r_ in rows),
+                         "median_max": max(r_["median_window_commits"] for r_ in rows)}
+
+# How similar are solutions to the same brief? Exploratory, added after the plan (analysis/solution_similarity.py;
+# features from src/extract_solutions.py). Pairs of track-labelled active repositories; Jaccard index per kind of item.
+SOL_RUNS = 999
+rng_sol = np.random.default_rng(20260923)
+sol = pd.read_json(DATA / "solutions_private.jsonl", lines=True).set_index("repo").reindex(tr.index)
+groups = tr.track.values
+traced = pd.Series(any_tool, index=s.index).reindex(tr.index).fillna(False).values.astype(bool)
+S_: dict = {"n": len(tr), "pairs_within": int(sum(k * (k - 1) // 2 for k in pd.Series(groups).value_counts())),
+            "traced": prop(traced.sum(), len(tr))}
+for kind in ("deps", "paths", "headings", "blobs"):
+    sets = [set(v) if isinstance(v, list) else set() for v in sol[kind]]
+    j = ss.jaccard_matrix(sets)
+    w_, a_ = ss.within_across(j, groups)
+    ex = ss.excess_by_status(j, groups, traced)
+    S_[kind] = {"within": Fixed(w_, 3), "across": Fixed(a_, 3), "ratio": r2(w_ / a_),
+                "p": fmt_p(ss.permutation_p(j, groups, SOL_RUNS, rng_sol)),
+                "median_items": num(np.median([len(x) for x in sets])),
+                **{f"{k}_{m}": Fixed(v[m], 3) for k, v in ex.items() for m in ("within", "across", "excess")},
+                "status_p": fmt_p(ss.status_permutation_p(j, groups, traced, SOL_RUNS, rng_sol))}
+blob_sets = [set(v) if isinstance(v, list) else set() for v in sol.blobs]
+same_track, other_track = np.zeros(len(tr), dtype=bool), np.zeros(len(tr), dtype=bool)
+for i, (b_i, g_i) in enumerate(zip(blob_sets, groups)):
+    if b_i:
+        same_track[i] = any(b_i & b_k for k, (b_k, g_k) in enumerate(zip(blob_sets, groups)) if k != i and g_k == g_i)
+        other_track[i] = any(b_i & b_k for b_k, g_k in zip(blob_sets, groups) if g_k != g_i)
+where_blob: dict = {}
+for b_i, g_i in zip(blob_sets, groups):
+    for oid in b_i:
+        where_blob.setdefault(oid, []).append(g_i)
+shared = [set(v) for v in where_blob.values() if len(v) > 1]
+S_["shared_files"] = {"one_track": sum(len(v) == 1 for v in shared), "several_tracks": sum(len(v) > 1 for v in shared)}
+S_["identical_code_same_track"] = prop(same_track.sum(), len(tr))
+S_["identical_code_other_track"] = prop(other_track.sum(), len(tr))
+dep_sets = [set(v) if isinstance(v, list) else set() for v in sol.deps]
+ss.distinctive_items(dep_sets, groups, 0.25, 2.0, 6).round(3).to_csv(TABLES / "solution_distinctive_deps.csv", index=False)
+R["solutions"] = S_
+
+# How each team solved its brief, coded from README and file list with a fixed codebook by an LLM (exploratory;
+# src/llm_codebook.py; cached answers in data/llm_codebook/responses.jsonl, last valid answer per repository).
+answers = {}
+for line in (DATA / "llm_codebook" / "responses.jsonl").open(encoding="utf-8"):
+    rec = json.loads(line)
+    if rec["answer"].strip():
+        answers[rec["repo"]] = {**json.loads(rec["answer"]), "model": rec["model"], "time": rec["time_utc"]}
+ap = pd.DataFrame.from_dict(answers, orient="index").reindex(tr.index)
+NAP = int(ap.core_method.notna().sum())
+ap["pattern"] = np.select([ap.core_method.isin(["algorithm", "ml_model"]) & (ap.llm_role == "support"),
+                           ap.llm_role == "core", ap.llm_role == "none"], ["explains", "llm_task", "no_llm"], "other")
+ct = pd.crosstab(tr.track, ap.core_method)
+top_share = ct.max(axis=1) / ct.sum(axis=1)
+sdk_ = (s.llm_sdks.fillna("") != "").reindex(tr.index)
+uses_llm = ap.llm_role.isin(["core", "support"])
+A_ = {"n": NAP, "model": ap.model.dropna().iloc[0], "first": ap.time.min()[:10], "last": ap.time.max()[:10],
+      "core": {k: prop((ap.core_method == k).sum(), NAP) for k in ["algorithm", "llm_prompt", "llm_agent", "ml_model",
+                                                                     "pretrained", "unclear"]},
+      "pattern": {k: prop((ap.pattern == k).sum(), NAP) for k in ["explains", "llm_task", "no_llm", "other"]},
+      "web_app": prop((ap.interface == "web_app").sum(), NAP),
+      "evaluation": prop((ap.evaluation == True).sum(), NAP),  # noqa: E712
+      "by_track": chi2_test(ct),
+      "briefs_top75": int((top_share >= 0.75).sum()),
+      "sdk_given_llm": prop((uses_llm & sdk_).sum(), uses_llm.sum()),
+      "sdk_kappa": r2(cohen_kappa_score(uses_llm[ap.llm_role != "unclear"], sdk_[ap.llm_role != "unclear"])),
+      "small_cells_rare": int((stats.chi2_contingency(ct)[3][:, [ct.columns.get_loc(c) for c in ("pretrained", "unclear")]] < 5).sum()),
+      "no_sdk_given_no_llm": prop(((ap.llm_role == "none") & ~sdk_).sum(), (ap.llm_role == "none").sum())}
+labels_m = {"algorithm": "rules or algorithm", "llm_prompt": "LLM prompt", "llm_agent": "LLM agent",
+            "ml_model": "trained model", "pretrained": "pretrained model"}
+dist = pd.read_csv(TABLES / "solution_distinctive_deps.csv", dtype={"group": str})
+rows_ap = []
+for code, *_ in CASES:
+    row = ct.loc[code]
+    eff = float(np.exp(stats.entropy(row[row > 0])))
+    libs = dist[dist.group == code].sort_values("lift", ascending=False).head(2)
+    rows_ap.append({"track": code, "n": int(row.sum()), "top_method": labels_m.get(row.idxmax(), row.idxmax()),
+                    "top_share": pct(row.max(), row.sum()), "effective_methods": rhu(eff, 1),
+                    "llm_task_pct": pct((ap.loc[tr.track == code, "llm_role"] == "core").sum(), row.sum()),
+                    "libraries": "; ".join(f"{i} ({pct(sh * 100, 100):.0f}%)" for i, sh in zip(libs.item, libs.share_in)) or "--"})
+pd.DataFrame(rows_ap).to_csv(TABLES / "solution_approaches.csv", index=False)
+A_["tracks"] = {f"t{r_['track']}": {k: v for k, v in r_.items() if k != "track"} for r_ in rows_ap}
+R["approach"] = A_
 F["rq3"] = R
 
 # ------------------------------------------------------------------ RQ4 risk
@@ -571,6 +677,15 @@ if len(lab):
     lab["human_language"] = lab.human_language.str.strip().str.lower()
     V["readme_sample"]["agree"] = int((lab.human_language == lab.auto_language).sum())
     V["readme_sample"]["kappa"] = r2(cohen_kappa_score(lab.human_language, lab.auto_language))
+    V["readme_sample"]["agree_pct"] = pct(V["readme_sample"]["agree"], len(lab))
+    # The sample was stratified by the automatic label; weight each stratum's agreement by its share of the
+    # written READMEs of repositories with team commits (the population the sample was drawn from).
+    pop = readme[readme.language.isin(["russian", "english", "kazakh", "mixed"])].language.value_counts()
+    acc = lab.assign(ok=lab.human_language == lab.auto_language).groupby("auto_language").ok.mean()
+    V["readme_sample"]["weighted_acc"] = rhu(100 * sum(pop[k] * acc.get(k, 0) for k in pop.index) / pop.sum(), 0)
+    for k in ["russian", "english", "kazakh", "mixed"]:
+        sub = lab[lab.auto_language == k]
+        V["readme_sample"][f"agree_{k}"] = {"n": int((sub.human_language == k).sum()), "of": len(sub)}
 upd_wave = updated[(updated >= datetime(2026, 9, 23, 18, 0, tzinfo=TZ)) & (updated < datetime(2026, 9, 23, 19, 0, tzinfo=TZ))]
 late = updated[(updated >= datetime(2026, 9, 23, 19, 0, tzinfo=TZ)) & (updated < datetime(2026, 9, 24, 0, 0, tzinfo=TZ))]
 V["archive_later"] = {"n": len(late), "times": ", ".join(sorted(late.dt.strftime("%H:%M")))}

@@ -25,4 +25,10 @@ Status: `ok` = evidence checked; `todo` = evidence still needed; `pending` = wai
 | 18 | Jury review of submitted projects 24–28 Sep; finalists present and winners are announced at Demo Day on 29 Sep; awards on 1 Oct at Digital Bridge | hackalem.ai timeline (read 2026-09-27) | ok |
 | 19 | 446 repositories were archived before the event, in bulk operations on 15, 17 and 22 Sep | repos.csv updated_at (GitHub API, 24 Sep); run_analysis.py rq1.prearchived | ok (inferred from updated_at; stated as such) |
 | 20 | Core counts reproduced by independent code for all repositories | checks/recompute_core.py → recompute_core_result.json | ok |
-
+| 21 | The organisers were informed privately by e-mail on 28 September 2026 | Sent e-mail to team@baitc.org (contact on hackalem.ai), saved as .eml in data/secrets_private/ | ok |
+| 22 | `AGENTS.md` is an open format read by many agents (Codex, Cursor, Copilot's coding agent, Gemini CLI and others) | agents.md (read 2026-09-28) | ok |
+| 23 | Current versions of Claude Code read `AGENTS.md` when a repository has no `CLAUDE.md` | code.claude.com/docs/en/memory, section "AGENTS.md" (read 2026-09-28; needs v2.1.277 or later) | ok ("current versions"; version at the event unknown) |
+| 24 | GitHub reports partner-format secrets in public repositories to the provider, which decides whether to revoke; OpenAI API keys are covered by partner alerts and push protection | GitHub Docs: about secret scanning for partners; supported patterns table, OpenAI row (read 2026-09-28) | ok |
+| 25 | Push protection for users is on by default for pushes to public repositories and can be bypassed; repository/organisation push protection is off by default | GitHub Docs: push protection (read 2026-09-28) | ok |
+| 26 | Language models still lag on Kazakh benchmarks behind high-resource languages | KazMMLU abstract: "significant performance gaps compared to high-resource languages" (read 2026-09-28) | ok |
+| 27 | Which Codex interface leaves which trace is not documented in the sources we read | Codex docs (cloud, AGENTS.md pages) read 2026-09-28; branch prefixes appear only in issues and forum posts | ok (stated as not documented) |

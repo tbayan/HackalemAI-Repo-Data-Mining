@@ -1,15 +1,15 @@
 % Figure 1: study architecture, drawn in the style of block diagrams in machine-learning papers.
-% Tints of the paper's figure palette: grey for context, blue for data (latex/colors.tex).
+% Pastel fill / outline pairs shared with the data figures (latex/colors.tex, paper_style.PAIRS).
 \begin{tikzpicture}[
   font=\footnotesize,
   >={Stealth[length=4pt,width=3.2pt]},
-  blk/.style={rectangle, rounded corners=3pt, draw=ink!75, line width=0.5pt, align=center, text=ink, inner sep=3pt},
-  src/.style={blk, fill=inktwo!10, minimum width=2.45cm, minimum height=1.05cm},
-  clone/.style={blk, fill=okblue!8, minimum width=1.55cm, minimum height=3.25cm},
-  lane/.style={blk, fill=okblue!16, minimum width=2.15cm, minimum height=0.6cm},
-  feat/.style={blk, fill=okblue!28, minimum width=1.45cm, minimum height=3.25cm},
-  head/.style={blk, fill=okblue!6, draw=okblue!80, text width=2.95cm, minimum height=0.64cm},
-  side/.style={blk, fill=white, dashed, minimum width=2.45cm, minimum height=0.95cm},
+  blk/.style={rectangle, rounded corners=3pt, line width=0.6pt, align=center, text=ink, inner sep=3pt},
+  src/.style={blk, fill=purpleF, draw=purpleL, minimum width=2.45cm, minimum height=1.05cm},
+  clone/.style={blk, fill=blueF, draw=blueL, minimum width=1.55cm, minimum height=3.25cm},
+  lane/.style={blk, fill=orangeF, draw=orangeL, minimum width=2.15cm, minimum height=0.6cm},
+  feat/.style={blk, fill=yellowF, draw=yellowL, minimum width=1.45cm, minimum height=3.25cm},
+  head/.style={blk, fill=greenF, draw=greenL, text width=2.95cm, minimum height=0.64cm},
+  side/.style={blk, fill=greyF, draw=greyL, dashed, minimum width=2.45cm, minimum height=0.95cm},
   arr/.style={->, line width=0.6pt, draw=ink!80},
   darr/.style={->, line width=0.6pt, draw=inktwo, dashed},
 ]
@@ -25,7 +25,7 @@
 \node[lane] (l4) at (5.2,-1.2) {Secret scan};
 \node[feat] (feat) at (7.35,0) {Feature\\tables};
 \begin{scope}[on background layer]
-  \node[rectangle, rounded corners=7pt, draw=inktwo!55, fill=inktwo!4, line width=0.5pt,
+  \node[rectangle, rounded corners=7pt, draw=greyL, fill=greyF, line width=0.6pt,
         fit=(clone)(l1)(l4)(feat), inner sep=7pt] (frame) {};
 \end{scope}
 \node[anchor=south, font=\footnotesize\itshape, text=inktwo] at ([yshift=2pt]frame.north) {per repository};
@@ -37,22 +37,22 @@
 }
 
 % checks, attached to the feature tables
-\node[side] (chk) at (9.95,1.55) {Checks: GitHub API,\\independent recount};
+\node[side] (chk) at (9.95,1.55) {Checks: GitHub API,\\separate recount};
 \draw[darr] (chk.south |- feat.east) -- (chk.south);
 \fill[inktwo] (chk.south |- feat.east) circle (1.1pt);
 
 % analyses
 \coordinate (bus) at (11.35,0);
 \draw[line width=0.6pt, draw=ink!80] (feat.east) -- (bus);
-\node[head] (h1) at (13.1,1.2)  {Population};
-\node[head] (h2) at (13.1,0.4)  {Process and agent traces};
-\node[head] (h3) at (13.1,-0.4) {Product};
-\node[head] (h4) at (13.1,-1.2) {Credential exposure};
+\node[head] (h1) at (13.1,1.2)  {Population (RQ1)};
+\node[head] (h2) at (13.1,0.4)  {Work and traces (RQ2)};
+\node[head] (h3) at (13.1,-0.4) {Artefacts (RQ3)};
+\node[head] (h4) at (13.1,-1.2) {Credentials (RQ4)};
 \draw[line width=0.6pt, draw=ink!80] (bus |- h1.west) -- (bus |- h4.west);
 \foreach \h in {h1,h2,h3,h4} \draw[arr] (bus |- \h.west) -- (\h.west);
 
 % what was fixed in advance
-\node[side] (known) at (13.1,-2.35) {Known in advance:\\deadline, required tool};
+\node[side] (known) at (13.1,-2.35) {Known in advance:\\required tool};
 \draw[darr] (facts.south) |- (known.west);
 \draw[darr] (known.east) -- ++(0.35,0) |- (h2.east);
 \end{tikzpicture}

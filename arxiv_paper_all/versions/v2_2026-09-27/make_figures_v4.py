@@ -1,11 +1,9 @@
 """Result figures (Figs. 2-6), drawn only from analysis/facts_paper.json and tables/*.csv.
 
-One visual system for the whole paper, shared with the TikZ architecture diagram (Fig. 1):
-pastel fills with a darker outline of the same hue (paper_style.PAIRS). Colour meanings are the
-same in every figure: blue is the main series and Codex, orange is Claude Code, red marks
-exceptions and exposure (repositories archived before the event, the deadline, key strings still
-present) and grey is context (the evening batch, strings only in history). Percentages carry one
-decimal, as in the text.
+Colour rule for the whole paper: blue is the main series (and Codex, the required agent),
+orange is Claude Code, vermilion marks exceptions and exposure (repositories archived before
+the event, the deadline, key strings still present), grey is context (the organiser batch,
+strings only in history). Percentages carry one decimal, as in the text.
 """
 from __future__ import annotations
 
@@ -22,22 +20,10 @@ PAPER = Path(__file__).resolve().parent.parent
 F = json.loads((PAPER / "analysis" / "facts_paper.json").read_text())
 TABLES = PAPER / "tables"
 P, Q, R, K = F["rq1"], F["rq2"], F["rq3"], F["rq4"]
-EDGE = 0.8
 
 
 def title(ax, text: str) -> None:
     ax.set_title(text, loc="left", fontsize=8.5)
-
-
-def patch(name: str, label: str) -> Patch:
-    return Patch(facecolor=ps.fill(name), edgecolor=ps.line(name), linewidth=EDGE, label=label)
-
-
-def dot(ax, x, y, lo, hi, name: str, ms: float = 4.4, horizontal: bool = True, label=None) -> None:
-    err = [[x - lo], [hi - x]] if horizontal else [[y - lo], [hi - y]]
-    kw = dict(xerr=err) if horizontal else dict(yerr=err)
-    ax.errorbar(x, y, fmt="o", ms=ms, mfc=ps.fill(name), mec=ps.line(name), mew=1.1, ecolor=ps.line(name),
-                elinewidth=1.0, capsize=2.0, label=label, **kw)
 
 
 def fig_population() -> None:
@@ -45,13 +31,13 @@ def fig_population() -> None:
     pre, batch = P["prearchived"]["n"], P["batch"]["n"]
     open_nb = P["open"]["n"] - batch
     act_nb, act_b = P["active_of_open_nonbatch"]["n"], P["batch"]["active"]["n"]
-    rows = [("Created by the organisers", [(open_nb, "blue"), (batch, "grey"), (pre, "red")]),
-            ("Active in the event window", [(act_nb, "blue"), (act_b, "grey")]),
-            ("Active, matched to a track", [(P["matched_track"]["n"], "blue")])]
+    rows = [("Created by the organisers", [(open_nb, ps.BLUE), (batch, ps.GRAY), (pre, ps.VERMILLION)]),
+            ("Active in the event window", [(act_nb, ps.BLUE), (act_b, ps.GRAY), (0, ps.VERMILLION)]),
+            ("Active, matched to a track", [(P["matched_track"]["n"], ps.BLUE)])]
     for i, (label, parts) in enumerate(rows):
         left = 0
-        for v, name in parts:
-            a.barh(-i, v, left=left, height=0.55, color=ps.fill(name), edgecolor=ps.line(name), linewidth=EDGE)
+        for v, colour in parts:
+            a.barh(-i, v, left=left, height=0.55, color=colour, edgecolor="white", linewidth=0.6)
             left += v
         a.text(left + 60, -i, f"{left:,}", va="center", fontsize=7.5, color=ps.INK)
     a.set_yticks([0, -1, -2], [r[0] for r in rows])
@@ -59,21 +45,23 @@ def fig_population() -> None:
     a.set_xlabel("Repositories")
     ps.thousands(a, "x")
     ps.tidy(a, grid_axis="x")
-    a.legend(handles=[patch("blue", "Open, not in batch"), patch("grey", "Evening batch, 22 Sep"),
-                      patch("red", "Archived before the event")], loc="lower right", fontsize=6.8, handlelength=1.2)
+    a.legend(handles=[Patch(color=ps.BLUE, label="Open, not in batch"), Patch(color=ps.GRAY, label="Evening batch, 22 Sep"),
+                      Patch(color=ps.VERMILLION, label="Archived before the event")],
+             loc="lower right", fontsize=6.8, handlelength=1.0)
     title(a, "(a) Repositories and activity")
 
     groups = [("Before\n1 Sep", "before_sep01"), ("1–14\nSep", "sep01_14"), ("15–21\nSep", "sep15_21"),
               ("22 Sep\n(other)", "sep22"), ("22 Sep\n(batch)", "batch")]
     for i, (label, key) in enumerate(groups):
         o, al = P["creation"][key]["open"], P["creation"][key]["all"]
-        dot(b, i, o["pct"], o["lo"], o["hi"], "grey" if key == "batch" else "blue", ms=5, horizontal=False)
+        colour = ps.GRAY if key == "batch" else ps.BLUE
+        b.errorbar(i, o["pct"], yerr=[[o["pct"] - o["lo"]], [o["hi"] - o["pct"]]], fmt="o", color=colour, ms=4.5,
+                   capsize=2.5, lw=0.9)
         if P["creation"][key]["prearchived"]:
-            b.plot(i + 0.2, al["pct"], marker="D", ms=4, mfc=ps.fill("red"), mec=ps.line("red"), mew=1.1, ls="none")
+            b.plot(i + 0.18, al["pct"], marker="o", mfc="white", mec=ps.VERMILLION, ms=4.2, ls="none", mew=1)
         b.text(i, o["hi"] + 3, f"n = {o['of']:,}", ha="center", fontsize=6.6, color=ps.INK2)
-    b.plot([], [], "o", ms=4.5, mfc=ps.fill("blue"), mec=ps.line("blue"), mew=1.1, label="Open during the event")
-    b.plot([], [], "o", ms=4.5, mfc=ps.fill("grey"), mec=ps.line("grey"), mew=1.1, label="Evening batch")
-    b.plot([], [], "D", ms=4, mfc=ps.fill("red"), mec=ps.line("red"), mew=1.1, label="Including archived before")
+    b.plot([], [], "o", color=ps.BLUE, ms=4, label="Open during the event")
+    b.plot([], [], "o", mfc="white", mec=ps.VERMILLION, ms=4, mew=1, label="Including archived before")
     b.legend(loc="lower left", fontsize=6.6, handlelength=1.0)
     b.set_xticks(range(len(groups)), [g[0] for g in groups])
     b.set_ylim(0, 75)
@@ -88,10 +76,10 @@ def fig_process() -> None:
     fig, (a, b) = ps.new_figure(ps.FULL, 2.2, ncols=2, gridspec_kw={"width_ratios": [1.35, 1]})
     tl = pd.read_csv(TABLES / "timeline_10min.csv")
     x = 11 + (tl.minutes_after_11 + 5) / 60
-    a.axvspan(13, 18, color=ps.fill("grey"), lw=0)
-    a.fill_between(x, tl.commits, color=ps.fill("blue"), lw=0)
-    a.plot(x, tl.commits, color=ps.line("blue"), lw=1.3)
-    a.axvline(18, color=ps.line("red"), lw=1.0)
+    a.axvspan(13, 18, color=ps.TINT, lw=0)
+    a.fill_between(x, tl.commits, color=ps.BLUE, alpha=0.15, lw=0)
+    a.plot(x, tl.commits, color=ps.BLUE, lw=1.3)
+    a.axvline(18, color=ps.VERMILLION, lw=0.9)
     a.text(18.07, tl.commits.max() * 0.97, "Deadline\n18:00", fontsize=7, color=ps.INK2, va="top")
     a.text(13.07, tl.commits.max() * 0.97, "Start 13:00", fontsize=7, color=ps.INK2, va="top")
     a.set_xlim(11, 19)
@@ -102,7 +90,7 @@ def fig_process() -> None:
     title(a, "(a) Commits over the event day")
 
     share = pd.read_csv(TABLES / "last_hour_share.csv").last_hour_share * 100
-    b.hist(share, bins=np.arange(0, 105, 5), color=ps.fill("blue"), edgecolor=ps.line("blue"), linewidth=0.7)
+    b.hist(share, bins=np.arange(0, 105, 5), color=ps.BLUE, edgecolor="white", linewidth=0.5)
     top = b.get_ylim()[1] * 1.22
     b.set_ylim(0, top)
     for xv, text, h in ((20, "even (20%)", 0.98), (50, "majority (50%)", 0.88)):
@@ -120,26 +108,25 @@ def fig_traces() -> None:
     T = Q["traces"]
     SR = T["self_report"]
     fig, (a, b) = ps.new_figure(ps.FULL, 2.45, ncols=2, gridspec_kw={"width_ratios": [1, 1]})
-    tools = (("codex", "blue", "Codex (required)", 0.15), ("claude", "orange", "Claude Code", -0.15))
+    tools = (("codex", ps.BLUE, "Codex (required)", 0.14), ("claude", ps.ORANGE, "Claude Code", -0.14))
 
     def dots(ax, rows, get, xmax):
         y = np.arange(len(rows))[::-1].astype(float)
-        for tool, name, lab, off in tools:
+        for tool, colour, name, off in tools:
             for yi, (_, key) in zip(y, rows):
-                if tool == "claude" and key == "any":
-                    continue  # AGENTS.md is not a Claude Code trace, so this row equals the one above
                 d = get(tool, key)
-                dot(ax, d["pct"], yi + off, d["lo"], d["hi"], name, ms=4.2, label=lab if yi == y[0] else None)
-                ax.text(d["hi"] + 0.035 * xmax, yi + off, f"{d['pct']:.1f}", va="center", fontsize=6.4, color=ps.INK2)
+                ax.errorbar(d["pct"], yi + off, xerr=[[d["pct"] - d["lo"]], [d["hi"] - d["pct"]]], fmt="o",
+                            color=colour, ms=3.8, capsize=1.8, lw=0.85, label=name if yi == y[0] else None)
+                ax.text(d["hi"] + 1.2, yi + off, f"{d['pct']:.1f}", va="center", fontsize=6.4, color=ps.INK2)
         ax.set_yticks(y, [r[0] for r in rows])
-        ax.set_xlim(-0.025 * xmax, xmax)
+        ax.set_xlim(0, xmax)
         ax.set_ylim(-0.6, len(rows) - 0.4)
         ps.tidy(ax, grid_axis="x")
         ax.axhline(1.5, color=ps.GRID, lw=0.8)
 
     rows = [("Context file", "file"), ("Branch name", "branch"), ("Commit signature", "signature"),
             ("Author named after the tool", "name"), ("Any tool-specific trace", "specific"),
-            ("Codex trace incl. AGENTS.md", "any")]
+            ("Any trace incl. AGENTS.md", "any")]
     dots(a, rows, lambda t, k: T[t][k], 62)
     a.set_xlabel(f"Active repositories (%; n = {R['n']:,})")
     a.legend(loc="center right", bbox_to_anchor=(1.0, 0.56), fontsize=6.8, handlelength=1.2, borderaxespad=0.2)
@@ -153,41 +140,30 @@ def fig_traces() -> None:
 
 
 def fig_product() -> None:
-    rows = [("Engineering", "Test files", R["tests"]), ("Engineering", "Test file that defines a test", R["test_functions"]),
-            ("Engineering", "Dockerfile", R["dockerfile"]),
-            ("Engineering", "Compose file", R["compose"]), ("Engineering", "Continuous-integration workflow", R["ci"]),
+    n = R["n"]
+    rows = [("Engineering", "Test files", R["tests"]), ("Engineering", "Dockerfile", R["dockerfile"]),
+            ("Engineering", "Docker Compose file", R["compose"]), ("Engineering", "CI workflow", R["ci"]),
             ("Engineering", "Deployment configuration", R["deploy_config"]),
             ("LLM", "Any LLM SDK or API", R["any_llm"]), ("LLM", "OpenAI SDK or API", R["llm_providers"]["OpenAI"]),
             ("README", "Run or setup instructions", R["readme_run_instructions"]), ("README", "Images", R["readme_images"]),
+            ("README", "Mentions a coding agent", R["readme_mentions_agent"]),
             ("README", "Link to a deployed app", R["readme_deployed_link"])]
-    headings = {"Engineering": "Engineering artefacts (active repositories)", "LLM": "LLM use (active repositories)",
-                "README": "README features (written READMEs)"}
-    fig, ax = ps.new_figure(ps.FULL, 3.0)
+    fig, ax = ps.new_figure(ps.FULL, 2.55)
     ps.tidy(ax, grid_axis="x")
-    ticks, labels, heads, y, last = [], [], [], 0, None
+    ypos, y, last = [], 0, None
     for group, label, d in rows:
-        if group != last:
-            y += 0.4 if last is not None else 0
-            ticks.append(-y)
-            labels.append(headings[group])
-            heads.append(len(labels) - 1)
-            y += 1
-        ticks.append(-y)
-        labels.append(label)
-        dot(ax, d["pct"], -y, d["lo"], d["hi"], "blue")
+        if last is not None and group != last:
+            y += 0.6
+        ypos.append(y)
+        ax.errorbar(d["pct"], -y, xerr=[[d["pct"] - d["lo"]], [d["hi"] - d["pct"]]], fmt="o", color=ps.BLUE, ms=4,
+                    capsize=2, lw=0.9)
         ax.text(d["hi"] + 1.2, -y, f"{d['pct']:.1f}%  ({d['n']:,} of {d['of']:,})", va="center", fontsize=6.8, color=ps.INK2)
         last = group
         y += 1
-    ax.set_yticks(ticks, labels)
-    for i, t in enumerate(ax.get_yticklabels()):
-        if i in heads:
-            t.set_fontstyle("italic")
-            t.set_color(ps.INK2)
-    ax.tick_params(axis="y", length=0)
+    ax.set_yticks([-v for v in ypos], [r[1] for r in rows])
     ax.set_xlim(0, 115)
-    ax.spines["bottom"].set_bounds(0, 100)
     ax.set_xticks(range(0, 101, 20))
-    ax.set_xlabel("Share (%, with 95% Wilson interval)")
+    ax.set_xlabel("Share of repositories (%, 95% Wilson CI)")
     fig.tight_layout()
     ps.save(fig, "fig_product")
 
@@ -202,23 +178,22 @@ def fig_risk() -> None:
     y = np.arange(len(order))
     final = [rules[k]["final"] for k in order]
     hist = [rules[k]["repos"] - rules[k]["final"] for k in order]
-    a.barh(y, final, height=0.55, color=ps.fill("red"), edgecolor=ps.line("red"), linewidth=EDGE)
-    a.barh(y, hist, left=final, height=0.55, color=ps.fill("grey"), edgecolor=ps.line("grey"), linewidth=EDGE)
+    a.barh(y, final, height=0.55, color=ps.VERMILLION, label="Still in the final version")
+    a.barh(y, hist, left=final, height=0.55, color=ps.LIGHT, label="Only in history")
     for yi, k in zip(y, order):
         a.text(rules[k]["repos"] + 0.8, yi, str(rules[k]["repos"]), va="center", fontsize=7, color=ps.INK2)
     a.set_yticks(y, [names[k] for k in order])
     a.set_xlabel("Active repositories")
     a.set_xlim(0, max(r["repos"] for r in rules.values()) * 1.18)
     ps.tidy(a, grid_axis="x")
-    a.legend(handles=[patch("red", "Still in the final version"), patch("grey", "Only in history")],
-             loc="lower right", fontsize=6.8, handlelength=1.2)
-    title(a, "(a) Strings matched by format-specific rules")
+    a.legend(loc="lower right", fontsize=6.8, handlelength=1.0)
+    title(a, "(a) Strings matching provider key formats")
 
     files = K["openai_files"]
     parts = [(".env.example", files["env_example"]), (".env", files["env"]), ("Other .env variants", files["env_other"]),
              ("Source or text files", files["source_or_text"])]
     yb = np.arange(len(parts))[::-1]
-    b.barh(yb, [v for _, v in parts], height=0.55, color=ps.fill("blue"), edgecolor=ps.line("blue"), linewidth=EDGE)
+    b.barh(yb, [v for _, v in parts], height=0.55, color=ps.BLUE)
     for yi, (_, v) in zip(yb, parts):
         b.text(v + 0.5, yi, str(v), va="center", fontsize=7, color=ps.INK2)
     b.set_yticks(yb, [p[0] for p in parts])

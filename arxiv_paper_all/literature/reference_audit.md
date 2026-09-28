@@ -1,6 +1,6 @@
-# Reference audit (2026-09-27)
+# Reference audit (2026-09-28)
 
-Entries: 59; DOI registry match ok: 50; peer-reviewed venue without DOIs: 2; to check: 0; failed: 0; grey literature: 7.
+Entries: 66; DOI registry match ok: 50; peer-reviewed venue without DOIs: 2; to check: 0; failed: 0; grey literature: 14.
 
 | Key | Status | Registry | Title sim. | doi.org | Note | Published version found |
 |---|---|---|---|---|---|---|
@@ -35,7 +35,7 @@ Entries: 59; DOI registry match ok: 50; peer-reviewed venue without DOIs: 2; to 
 | sinha2015secretkeys | ok | Crossref | 1.00 | 302 -> http://ieeexplore.ieee.org/docume |  |  |
 | kalliamvakou2014perils | ok | Crossref | 1.00 | 302 -> https://dl.acm.org/doi/10.1145/25 |  |  |
 | hoess2025toolmatter | ok | Crossref | 1.00 | 302 -> https://ieeexplore.ieee.org/docum |  |  |
-| prana2019readme | ok | Crossref | 1.00 | 302 -> http://link.springer.com/10.1007/ |  |  |
+| prana2019readme | ok | Crossref | 1.00 | 302 -> http://link.springer.com/10.1007/ | known: dated by its journal issue, 24(3) 2019; online 2018 |  |
 | saghi2025procrastination | ok | Crossref | 1.00 | 302 -> https://ieeexplore.ieee.org/docum |  |  |
 | robbes2026heuristics | ok | Crossref | 1.00 | 302 -> https://dl.acm.org/doi/10.1145/37 |  |  |
 | robbes2026agenticmuch | ok | Crossref | 1.00 | 302 -> https://dl.acm.org/doi/10.1145/38 |  |  |
@@ -50,7 +50,7 @@ Entries: 59; DOI registry match ok: 50; peer-reviewed venue without DOIs: 2; to 
 | kazerouni2017procrastination | ok | Crossref | 1.00 | 302 -> https://dl.acm.org/doi/10.1145/31 |  |  |
 | bird2009git | ok | Crossref | 1.00 | 302 -> http://ieeexplore.ieee.org/docume |  |  |
 | baltes2022sampling | ok | Crossref | 1.00 | 302 -> https://link.springer.com/10.1007 |  |  |
-| ralph2020standards | ok | DataCite | 1.00 | 302 -> https://arxiv.org/abs/2010.03525 |  |  |
+| ralph2020standards | ok | DataCite | 1.00 | 302 -> https://arxiv.org/abs/2010.03525 | known: DataCite lists Davide Taibi twice |  |
 | basak2023tools | ok | Crossref | 1.00 | 302 -> https://ieeexplore.ieee.org/docum |  |  |
 | perry2023insecure | ok | Crossref | 1.00 | 302 -> https://dl.acm.org/doi/10.1145/35 |  |  |
 | rousseeuw1987silhouettes | ok | Crossref | 1.00 | 302 -> https://linkinghub.elsevier.com/r |  |  |
@@ -63,3 +63,10 @@ Entries: 59; DOI registry match ok: 50; peer-reviewed venue without DOIs: 2; to 
 | kazinform2026fivehours | grey |  |  | HTTP 200 | no DOI (grey literature) |  |
 | gitleaks2026 | grey |  |  | HTTP 200 | no DOI (grey literature) |  |
 | claudecode2026attribution | grey |  |  | HTTP 200 | no DOI (grey literature) |  |
+| openai2026agentsmd | grey |  |  | HTTP 200 | no DOI (grey literature) |  |
+| tomczak2014effectsize | grey |  |  | HTTP 200 | no DOI (grey literature) |  |
+| agentsmd2026site | grey |  |  | HTTP 200 | no DOI (grey literature) |  |
+| claudecode2026memory | grey |  |  | HTTP 200 | no DOI (grey literature) |  |
+| github2026pushprotection | grey |  |  | HTTP 200 | no DOI (grey literature) |  |
+| github2026partners | grey |  |  | HTTP 200 | no DOI (grey literature) |  |
+| github2026patterns | grey |  |  | HTTP 200 | no DOI (grey literature) |  |

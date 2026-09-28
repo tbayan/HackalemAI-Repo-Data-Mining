@@ -28,8 +28,55 @@ def bibtex(doi: str) -> str:
         return r.read().decode("utf-8")
 
 
+def dedupe_authors(raw: str) -> str:
+    m = re.search(r"(\bauthor\s*=\s*\{)(.*?)(\}\s*,)", raw, flags=re.S)
+    if not m:
+        return raw
+    names, seen = [], set()
+    for n in m.group(2).split(" and "):
+        if n.strip() not in seen:
+            seen.add(n.strip())
+            names.append(n.strip())
+    return raw[:m.start(2)] + " and ".join(names) + raw[m.end(2):]
+
+
+def arxiv_doi(raw: str) -> str:
+    """Print the arXiv DOI of a preprint (in howpublished) and drop the URL that repeats it."""
+    m = re.search(r"howpublished = \{arXiv preprint arXiv:([0-9.]+)\}", raw)
+    if not m:
+        return raw
+    aid = m.group(1)
+    raw = raw.replace(m.group(0), f"howpublished = {{arXiv preprint arXiv:{aid}, \\doi{{10.48550/arXiv.{aid}}}}}")
+    return re.sub(r"\s*url = \{https://arxiv\.org/abs/[^}]*\},", "", raw)
+
+
+YEAR_OF_ISSUE = {"10.1007/s10664-018-9660-3": "2019"}  # online 2018, journal issue 24(3), 2019
+
+# Corrections to the Crossref records, each checked against the publisher's page (literature/reference_audit.md).
+FIXES = {
+    "10.1145/2597073.2597074": [("ICSE ’14", "MSR 2014")],                   # MSR 2014, not ICSE
+    "10.1109/msr52588.2021.00020": [("Hackathon Code Where", "Hackathon Code: Where")],
+    "10.1145/3833089.3833091": [("Game Jams Hackathons", "Game Jams, Hackathons")],
+    "10.1145/1584322.1584325": [("Proceedings of the fifth international workshop on Computing education research workshop",
+                                 "Proceedings of the Fifth International Workshop on Computing Education Research Workshop")],
+}
+ARTICLE_NUMBER = {"10.1007/s10664-022-10201-x": "167", "10.1007/s10664-021-10072-8": "94"}  # Crossref article-number
+
+
 def tidy(raw: str) -> str:
     """Drop fields that repeat the DOI or add clutter, and use TeX quotes in titles."""
+    raw = arxiv_doi(dedupe_authors(raw))
+    for doi, year in YEAR_OF_ISSUE.items():
+        if doi.lower() in raw.lower():
+            raw = re.sub(r"year\s*=\s*\{\d{4}\}", "year={" + year + "}", raw, count=1)
+    for doi, fixes in FIXES.items():
+        if doi.lower() in raw.lower():
+            for a, b in fixes:
+                raw = raw.replace(a, b)
+    for doi, number in ARTICLE_NUMBER.items():
+        if doi.lower() in raw.lower() and not re.search(r"\bpages\s*=", raw):
+            raw = re.sub(r"(\bnumber\s*=\s*\{[^}]*\},)", r"\1 pages={" + number + "},", raw, count=1)
+    raw = re.sub(r"(\bpages\s*=\s*\{[^}]*?)–", r"\1--", raw)  # a Unicode dash is not read as a range
     raw = re.sub(r"\bISSN\s*=\s*\{[^}]*\},\s*", "", raw)
     raw = re.sub(r"\burl\s*=\s*\{https?://(?:dx\.)?doi\.org/[^}]*\},\s*", "", raw)
     raw = re.sub(r"(\btitle\s*=\s*\{[^\n]*?)\?:", r"\1?", raw)  # Crossref joins title and subtitle as "?:"
@@ -40,7 +87,9 @@ def offline() -> None:
     """Re-apply tidy() and the current grey literature without fetching again."""
     grey = (HERE / "grey_literature.bib").read_text(encoding="utf-8")
     generated = OUT.read_text(encoding="utf-8").split("% Grey literature:")[0].rstrip() + "\n"
-    OUT.write_text(tidy(generated) + "\n" + grey, encoding="utf-8")
+    head, *entries = generated.split("\n@")
+    generated = "\n@".join([head] + [tidy(e) for e in entries])
+    OUT.write_text(generated + "\n" + grey, encoding="utf-8")
     print(f"rewrote {OUT} offline")
 
 
