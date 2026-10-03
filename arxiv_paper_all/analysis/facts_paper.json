@@ -366,11 +366,11 @@
     "traces": {
       "codex": {
         "file": {
-          "n": 352,
+          "n": 300,
           "of": 1057,
-          "pct": 33.3,
-          "lo": 30.5,
-          "hi": 36.2
+          "pct": 28.4,
+          "lo": 25.7,
+          "hi": 31.2
         },
         "branch": {
           "n": 198,
@@ -401,20 +401,20 @@
           "hi": 24.2
         },
         "any": {
-          "n": 489,
+          "n": 444,
           "of": 1057,
-          "pct": 46.3,
-          "lo": 43.3,
-          "hi": 49.3
+          "pct": 42.0,
+          "lo": 39.1,
+          "hi": 45.0
         }
       },
       "claude": {
         "file": {
-          "n": 150,
+          "n": 90,
           "of": 1057,
-          "pct": 14.2,
-          "lo": 12.2,
-          "hi": 16.4
+          "pct": 8.5,
+          "lo": 7.0,
+          "hi": 10.4
         },
         "branch": {
           "n": 5,
@@ -438,18 +438,18 @@
           "hi": 0.4
         },
         "specific": {
-          "n": 263,
+          "n": 214,
           "of": 1057,
-          "pct": 24.9,
-          "lo": 22.4,
-          "hi": 27.6
+          "pct": 20.2,
+          "lo": 17.9,
+          "hi": 22.8
         },
         "any": {
-          "n": 263,
+          "n": 214,
           "of": 1057,
-          "pct": 24.9,
-          "lo": 22.4,
-          "hi": 27.6
+          "pct": 20.2,
+          "lo": 17.9,
+          "hi": 22.8
         }
       },
       "cursor": {
@@ -585,74 +585,113 @@
         }
       },
       "codex_file_only": {
-        "n": 260,
+        "n": 215,
         "of": 1057,
-        "pct": 24.6,
-        "lo": 22.1,
-        "hi": 27.3
+        "pct": 20.3,
+        "lo": 18.0,
+        "hi": 22.9
+      },
+      "context_excluded": {
+        "nextjs": {
+          "n": 89,
+          "of": 1057,
+          "pct": 8.4,
+          "lo": 6.9,
+          "hi": 10.2
+        },
+        "agents_any_path": {
+          "n": 352,
+          "of": 1057,
+          "pct": 33.3,
+          "lo": 30.5,
+          "hi": 36.2
+        },
+        "claude_any_path": {
+          "n": 150,
+          "of": 1057,
+          "pct": 14.2,
+          "lo": 12.2,
+          "hi": 16.4
+        },
+        "agents_dropped": 52,
+        "claude_dropped": 60,
+        "codex_any_with_them": {
+          "n": 489,
+          "of": 1057,
+          "pct": 46.3,
+          "lo": 43.3,
+          "hi": 49.3
+        },
+        "claude_any_with_them": {
+          "n": 263,
+          "of": 1057,
+          "pct": 24.9,
+          "lo": 22.4,
+          "hi": 27.6
+        }
       },
       "agents_md_with_claude": {
-        "n": 157,
-        "of": 263,
-        "pct": 59.7,
-        "lo": 53.7,
-        "hi": 65.4
+        "n": 102,
+        "of": 214,
+        "pct": 47.7,
+        "lo": 41.1,
+        "hi": 54.3
       },
       "agents_md_without_claude": {
-        "n": 195,
-        "of": 794,
-        "pct": 24.6,
-        "lo": 21.7,
-        "hi": 27.7
+        "n": 198,
+        "of": 843,
+        "pct": 23.5,
+        "lo": 20.8,
+        "hi": 26.5
       },
       "any_tool": {
-        "n": 581,
+        "n": 543,
         "of": 1057,
-        "pct": 55.0,
-        "lo": 52.0,
-        "hi": 57.9
+        "pct": 51.4,
+        "lo": 48.4,
+        "hi": 54.4
       },
       "no_trace": {
-        "n": 476,
+        "n": 514,
         "of": 1057,
-        "pct": 45.0,
-        "lo": 42.1,
-        "hi": 48.0
+        "pct": 48.6,
+        "lo": 45.6,
+        "hi": 51.6
       },
       "codex_and_claude": {
-        "n": 181,
+        "n": 126,
         "of": 1057,
-        "pct": 17.1,
-        "lo": 15.0,
-        "hi": 19.5
+        "pct": 11.9,
+        "lo": 10.1,
+        "hi": 14.0
       },
       "claude_not_codex": {
-        "n": 82,
+        "n": 88,
         "of": 1057,
-        "pct": 7.8,
-        "lo": 6.3,
-        "hi": 9.5
+        "pct": 8.3,
+        "lo": 6.8,
+        "hi": 10.1
       },
       "codex_not_claude": {
-        "n": 308,
+        "n": 318,
         "of": 1057,
-        "pct": 29.1,
-        "lo": 26.5,
-        "hi": 32.0
+        "pct": 30.1,
+        "lo": 27.4,
+        "hi": 32.9
       },
       "neither_codex_nor_claude": {
-        "n": 486,
+        "n": 525,
         "of": 1057,
-        "pct": 46.0,
-        "lo": 43.0,
-        "hi": 49.0
+        "pct": 49.7,
+        "lo": 46.7,
+        "hi": 52.7
       },
       "claude_not_codex_specific": {
-        "n": 202,
+        "n": 162,
         "of": 1057,
-        "pct": 19.1,
-        "lo": 16.9,
-        "hi": 21.6
+        "pct": 15.3,
+        "lo": 13.3,
+        "hi": 17.6
       },
       "other_rule_files": 27,
       "pr_refs": {
@@ -707,24 +746,24 @@
         }
       },
       "agents_md_assoc": {
-        "n_with": 352,
-        "n_without": 705,
-        "commits_with": 28,
+        "n_with": 300,
+        "n_without": 757,
+        "commits_with": 31,
         "commits_without": 16,
-        "commits_delta": 0.36,
+        "commits_delta": 0.43,
         "commits_p": "< 0.001",
         "hours_with": 5,
         "hours_without": 4,
-        "hours_delta": 0.26,
+        "hours_delta": 0.31,
         "hours_p": "< 0.001",
-        "tests_with": 95.7,
-        "tests_without": 82.7,
+        "tests_with": 96.0,
+        "tests_without": 83.5,
         "tests_p": "< 0.001",
-        "tests_v": 0.18,
+        "tests_v": 0.17,
         "tests_adjusted": {
-          "or": 3.51,
-          "lo": 1.99,
-          "hi": 6.17,
+          "or": 3.30,
+          "lo": 1.77,
+          "hi": 6.18,
           "p": "< 0.001",
           "n": 1057
         }
@@ -746,11 +785,11 @@
             "hi": 41.3
           },
           "any_given_mention": {
-            "n": 86,
+            "n": 84,
             "of": 120,
-            "pct": 71.7,
-            "lo": 63.0,
-            "hi": 79.0
+            "pct": 70.0,
+            "lo": 61.3,
+            "hi": 77.5
           },
           "specific_or_mention": {
             "n": 310,
@@ -760,18 +799,18 @@
             "hi": 32.1
           },
           "any_or_mention": {
-            "n": 523,
+            "n": 480,
             "of": 1057,
-            "pct": 49.5,
-            "lo": 46.5,
-            "hi": 52.5
+            "pct": 45.4,
+            "lo": 42.4,
+            "hi": 48.4
           },
           "file_given_mention": {
-            "n": 64,
+            "n": 62,
             "of": 120,
-            "pct": 53.3,
-            "lo": 44.4,
-            "hi": 62.0
+            "pct": 51.7,
+            "lo": 42.8,
+            "hi": 60.4
           },
           "branch_given_mention": {
             "n": 32,
@@ -795,9 +834,9 @@
             "hi": 11.6
           },
           "assoc": {
-            "or": 3.32,
-            "lo": 2.19,
-            "hi": 5.03
+            "or": 3.71,
+            "lo": 2.46,
+            "hi": 5.59
           }
         },
         "codex_broad": {
@@ -816,11 +855,11 @@
             "hi": 43.2
           },
           "any_given_mention": {
-            "n": 117,
+            "n": 114,
             "of": 168,
-            "pct": 69.6,
-            "lo": 62.3,
-            "hi": 76.1
+            "pct": 67.9,
+            "lo": 60.5,
+            "hi": 74.5
           },
           "specific_or_mention": {
             "n": 337,
@@ -830,18 +869,18 @@
             "hi": 34.8
           },
           "any_or_mention": {
-            "n": 540,
+            "n": 498,
             "of": 1057,
-            "pct": 51.1,
-            "lo": 48.1,
-            "hi": 54.1
+            "pct": 47.1,
+            "lo": 44.1,
+            "hi": 50.1
           },
           "file_given_mention": {
-            "n": 83,
+            "n": 80,
             "of": 168,
-            "pct": 49.4,
-            "lo": 41.9,
-            "hi": 56.9
+            "pct": 47.6,
+            "lo": 40.2,
+            "hi": 55.1
           },
           "branch_given_mention": {
             "n": 51,
@@ -865,9 +904,9 @@
             "hi": 9.1
           },
           "assoc": {
-            "or": 3.17,
-            "lo": 2.23,
-            "hi": 4.51
+            "or": 3.56,
+            "lo": 2.51,
+            "hi": 5.05
           }
         },
         "claude_strict": {
@@ -879,39 +918,39 @@
             "hi": 5.3
           },
           "specific_given_mention": {
-            "n": 37,
+            "n": 36,
             "of": 41,
-            "pct": 90.2,
-            "lo": 77.5,
-            "hi": 96.1
+            "pct": 87.8,
+            "lo": 74.5,
+            "hi": 94.7
           },
           "any_given_mention": {
-            "n": 37,
+            "n": 36,
             "of": 41,
-            "pct": 90.2,
-            "lo": 77.5,
-            "hi": 96.1
+            "pct": 87.8,
+            "lo": 74.5,
+            "hi": 94.7
           },
           "specific_or_mention": {
-            "n": 267,
+            "n": 219,
             "of": 1057,
-            "pct": 25.3,
-            "lo": 22.7,
-            "hi": 28.0
+            "pct": 20.7,
+            "lo": 18.4,
+            "hi": 23.3
           },
           "any_or_mention": {
-            "n": 267,
+            "n": 219,
             "of": 1057,
-            "pct": 25.3,
-            "lo": 22.7,
-            "hi": 28.0
+            "pct": 20.7,
+            "lo": 18.4,
+            "hi": 23.3
           },
           "file_given_mention": {
-            "n": 25,
+            "n": 21,
             "of": 41,
-            "pct": 61.0,
-            "lo": 45.7,
-            "hi": 74.3
+            "pct": 51.2,
+            "lo": 36.5,
+            "hi": 65.7
           },
           "branch_given_mention": {
             "n": 1,
@@ -935,9 +974,9 @@
             "hi": 8.6
           },
           "assoc": {
-            "or": 29.08,
-            "lo": 10.82,
-            "hi": 78.19
+            "or": 31.17,
+            "lo": 12.54,
+            "hi": 77.52
           }
         },
         "claude_broad": {
@@ -949,39 +988,39 @@
             "hi": 9.6
           },
           "specific_given_mention": {
-            "n": 63,
+            "n": 61,
             "of": 81,
-            "pct": 77.8,
-            "lo": 67.6,
-            "hi": 85.5
+            "pct": 75.3,
+            "lo": 64.9,
+            "hi": 83.4
           },
           "any_given_mention": {
-            "n": 63,
+            "n": 61,
             "of": 81,
-            "pct": 77.8,
-            "lo": 67.6,
-            "hi": 85.5
+            "pct": 75.3,
+            "lo": 64.9,
+            "hi": 83.4
           },
           "specific_or_mention": {
-            "n": 281,
+            "n": 234,
             "of": 1057,
-            "pct": 26.6,
-            "lo": 24.0,
-            "hi": 29.3
+            "pct": 22.1,
+            "lo": 19.7,
+            "hi": 24.7
           },
           "any_or_mention": {
-            "n": 281,
+            "n": 234,
             "of": 1057,
-            "pct": 26.6,
-            "lo": 24.0,
-            "hi": 29.3
+            "pct": 22.1,
+            "lo": 19.7,
+            "hi": 24.7
           },
           "file_given_mention": {
-            "n": 39,
+            "n": 34,
             "of": 81,
-            "pct": 48.1,
-            "lo": 37.6,
-            "hi": 58.9
+            "pct": 42.0,
+            "lo": 31.8,
+            "hi": 52.8
           },
           "branch_given_mention": {
             "n": 2,
@@ -1005,9 +1044,9 @@
             "hi": 4.5
           },
           "assoc": {
-            "or": 13.29,
-            "lo": 7.74,
-            "hi": 22.83
+            "or": 16.09,
+            "lo": 9.49,
+            "hi": 27.31
           }
         }
       },
@@ -1293,7 +1332,7 @@
       "n": 831,
       "tests": 86.6,
       "dockerfile": 32.0,
-      "agents_md": 30.9,
+      "agents_md": 26.1,
       "any_llm": 72.7
     },
     "readme_status": {
@@ -1517,11 +1556,11 @@
       "n": 984,
       "pairs_within": 46522,
       "traced": {
-        "n": 555,
+        "n": 521,
         "of": 984,
-        "pct": 56.4,
-        "lo": 53.3,
-        "hi": 59.5
+        "pct": 52.9,
+        "lo": 49.8,
+        "hi": 56.0
       },
       "deps": {
         "within": 0.131,
@@ -1529,13 +1568,13 @@
         "ratio": 1.60,
         "p": "= 0.001",
         "median_items": 14,
-        "with_within": 0.158,
-        "with_across": 0.105,
-        "with_excess": 0.054,
-        "without_within": 0.107,
-        "without_across": 0.062,
+        "with_within": 0.153,
+        "with_across": 0.100,
+        "with_excess": 0.053,
+        "without_within": 0.110,
+        "without_across": 0.065,
         "without_excess": 0.045,
-        "status_p": "= 0.464"
+        "status_p": "= 0.745"
       },
       "paths": {
         "within": 0.034,
@@ -1544,12 +1583,12 @@
         "p": "= 0.001",
         "median_items": 69,
         "with_within": 0.029,
-        "with_across": 0.023,
+        "with_across": 0.022,
         "with_excess": 0.007,
-        "without_within": 0.046,
-        "without_across": 0.033,
-        "without_excess": 0.013,
-        "status_p": "= 0.001"
+        "without_within": 0.043,
+        "without_across": 0.031,
+        "without_excess": 0.012,
+        "status_p": "= 0.003"
       },
       "headings": {
         "within": 0.031,
@@ -1557,13 +1596,13 @@
         "ratio": 1.23,
         "p": "= 0.001",
         "median_items": 17,
-        "with_within": 0.030,
+        "with_within": 0.029,
         "with_across": 0.024,
         "with_excess": 0.006,
-        "without_within": 0.032,
+        "without_within": 0.033,
         "without_across": 0.027,
-        "without_excess": 0.006,
-        "status_p": "= 0.785"
+        "without_excess": 0.005,
+        "status_p": "= 0.909"
       },
       "blobs": {
         "within": 0.003,
@@ -1576,8 +1615,8 @@
         "with_excess": 0.002,
         "without_within": 0.005,
         "without_across": 0.000,
-        "without_excess": 0.005,
-        "status_p": "= 0.022"
+        "without_excess": 0.004,
+        "status_p": "= 0.028"
       },
       "shared_files": {
         "one_track": 28,

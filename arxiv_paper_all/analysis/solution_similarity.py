@@ -87,4 +87,6 @@ def distinctive_items(sets: list[set], groups: np.ndarray, min_share: float, min
             if lift >= min_lift:
                 rows.append({"group": g, "item": item, "share_in": share_in, "share_out": share_out, "lift": lift})
     df = pd.DataFrame(rows)
-    return df.sort_values(["group", "share_in"], ascending=[True, False]).groupby("group").head(top) if len(df) else df
+    # ties in share are broken by name, so that the table does not depend on set order (hash seed)
+    return (df.sort_values(["group", "share_in", "item"], ascending=[True, False, True], kind="mergesort")
+            .groupby("group").head(top)) if len(df) else df

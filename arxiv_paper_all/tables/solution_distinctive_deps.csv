@@ -3,8 +3,8 @@ group,item,share_in,share_out,lift
 01,pandas,0.851,0.26,3.269
 01,scikit-learn,0.743,0.042,17.799
 01,joblib,0.527,0.018,29.975
-01,tzdata,0.419,0.057,7.331
 01,requests,0.419,0.046,9.077
+01,tzdata,0.419,0.057,7.331
 02,networkx,0.957,0.008,118.745
 02,pyarrow,0.957,0.044,21.874
 02,pandas,0.922,0.223,4.129
@@ -24,8 +24,8 @@ group,item,share_in,share_out,lift
 08,reportlab,0.523,0.015,34.336
 08,huggingface-hub,0.4,0.003,122.533
 09,pydantic-settings,0.276,0.107,2.583
-10,python-docx,0.31,0.091,3.408
 10,openpyxl,0.31,0.105,2.947
+10,python-docx,0.31,0.091,3.408
 10,pypdf,0.282,0.041,6.951
 11,openai,0.738,0.351,2.101
 11,python-docx,0.595,0.085,7.009
@@ -34,5 +34,5 @@ group,item,share_in,share_out,lift
 11,pypdf,0.381,0.044,8.753
 11,description,0.286,0.131,2.188
 12,next,0.313,0.146,2.142
-12,vitest,0.252,0.122,2.067
 12,eslint-config-next,0.252,0.085,2.961
+12,vitest,0.252,0.122,2.067

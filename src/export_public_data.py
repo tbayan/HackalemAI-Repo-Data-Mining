@@ -93,7 +93,8 @@ def main() -> None:
     s = stack.set_index("repo")
     keep_stack = ["primary_language", "frameworks", "llm_sdks", "dockerfile", "compose", "tests", "test_functions", "ci", "deploy_config",
                   "gitignore_covers_env", "env_example", "node_modules_committed", "virtualenv_committed", "pycache_committed",
-                  "agents_md", "claude_md", "gemini_md", "cursor_rules", "copilot_instructions", "other_agent_rules"]
+                  "agents_md", "claude_md", "gemini_md", "cursor_rules", "copilot_instructions", "other_agent_rules",
+                  "nextjs_agent_files"]
     for col in keep_stack:
         v = r.repo.map(s[col])
         out[col] = v.astype("Int64") if pd.api.types.is_numeric_dtype(s[col]) else v

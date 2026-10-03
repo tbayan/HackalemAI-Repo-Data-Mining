@@ -78,6 +78,11 @@ AGENT_FILES = {
     "copilot_instructions": re.compile(r"(^|/)\.github/(copilot-instructions\.md|instructions/|prompts/)", re.I),
     "other_agent_rules": re.compile(r"(^|/)(\.windsurfrules|\.clinerules|\.aider[^/]*|\.codex/)", re.I),
 }
+# Next.js writes agent context files itself: create-next-app always, and `next dev` (16.3 and later) when it
+# detects a coding agent. Its AGENTS.md holds only this managed block, and its CLAUDE.md only "@AGENTS.md"
+# (https://nextjs.org/docs/app/guides/ai-agents). Such files are not counted as traces of any agent.
+NEXTJS_BLOCK = re.compile(r"<!-- BEGIN:nextjs-agent-rules -->.*?<!-- END:nextjs-agent-rules -->", re.S)
+CLAUDE_FILE = re.compile(r"(^|/)claude\.md$", re.I)
 ENV_FILE = re.compile(r"(^|/)\.env(\.[^/]*)?$")
 ENV_TEMPLATE = re.compile(r"\.(example|sample|template|dist|defaults?|tpl)$", re.I)
 TEST_FILE = re.compile(r"(^|/)(tests?|__tests__)/|(^|/)test_[^/]+\.py$|_test\.(py|go)$|\.(test|spec)\.[jt]sx?$")
@@ -118,6 +123,33 @@ def deps_from(git_dir: Path, path: str) -> set[str]:
     elif name == "go.mod":
         found |= {norm(m) for m in re.findall(r"^\s*([\w./\-]+)\s+v\d", text, re.M)}
     return found
+
+
+def context_files(git_dir: Path, own_paths: list[str]) -> dict:
+    """AGENTS.md and CLAUDE.md files that a person or an agent wrote, outside vendored folders.
+
+    An AGENTS.md that holds only the Next.js block, and a CLAUDE.md that holds only "@AGENTS.md" next to an
+    AGENTS.md with that block, are left out. The *_any_path flags keep the earlier definition (any file of that
+    name, vendored folders included) so that the number of excluded files can be reported.
+    """
+    nextjs_dirs, agents_own, nextjs = set(), False, False
+    for p in own_paths:
+        if AGENT_FILES["agents_md"].search(p):
+            text = git(git_dir, "show", f"HEAD:{p}")
+            if NEXTJS_BLOCK.search(text):
+                nextjs = True
+                nextjs_dirs.add(str(PurePosixPath(p).parent))
+                if not NEXTJS_BLOCK.sub("", text).strip():
+                    continue
+            agents_own = True
+    claude_own = False
+    for p in own_paths:
+        if AGENT_FILES["claude_md"].search(p):
+            if (CLAUDE_FILE.search(p) and "/.claude/" not in f"/{p}" and str(PurePosixPath(p).parent) in nextjs_dirs
+                    and git(git_dir, "show", f"HEAD:{p}").strip() == "@AGENTS.md"):
+                continue
+            claude_own = True
+    return {"agents_md": int(agents_own), "claude_md": int(claude_own), "nextjs_agent_files": int(nextjs)}
 
 
 def process(name: str) -> dict:
@@ -184,8 +216,12 @@ def process(name: str) -> dict:
         "pycache_committed": int(any("__pycache__/" in p for p in paths)),
         "readme": int(any(re.fullmatch(r"readme(\.[a-z]+)?", p, re.I) for p in paths)),
     }
+    own_paths = [p for p, _ in own]
     for key, pattern in AGENT_FILES.items():
-        row[key] = int(any(pattern.search(p) for p in paths))
+        row[key] = int(any(pattern.search(p) for p in own_paths))
+    row["agents_md_any_path"] = int(any(AGENT_FILES["agents_md"].search(p) for p in paths))
+    row["claude_md_any_path"] = int(any(AGENT_FILES["claude_md"].search(p) for p in paths))
+    row.update(context_files(git_dir, own_paths))
     return row
 
 

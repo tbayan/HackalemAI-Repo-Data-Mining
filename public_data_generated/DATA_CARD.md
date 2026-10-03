@@ -1,11 +1,11 @@
 # HackAlem AI repositories: derived dataset
 
-Derived, pseudonymised data for the paper *Measuring AI Coding Agent Use from Repository Traces: Evidence from a Hackathon Where Codex Was Required* (Bayan, 2026).
+Derived, pseudonymised data for the paper *Agentic AI Under a Five-Hour Deadline: Traces of Coding Agents in 3,649 Hackathon Repositories* (Bayan, 2026).
 
 - **Source:** the 3,649 public GitHub repositories that the organisers of HackAlem AI (Astana, 23 September 2026) created in the organisation `BAITC-Hacks`. All of them were archived when collected.
 - **Collected:** 24 September 2026, through the GitHub REST and GraphQL APIs and full mirror clones.
 - **Licence:** CC BY 4.0 for this derived data. No source code, README text or commit message is redistributed.
-- **Citation:** Bayan, T. (2026). *HackAlem AI repository study: pseudonymised data and code* (v1.0.2). Zenodo. https://doi.org/10.5281/zenodo.23021335
+- **Citation:** Bayan, T. (2026). *HackAlem AI repository study: pseudonymised data and code* (v1.0.4). Zenodo. https://doi.org/10.5281/zenodo.23091476
 
 ## Files
 
@@ -36,7 +36,8 @@ Columns marked (1/0) are flags; `readme_words`, `readme_headings`, `readme_image
 | `tests`, `dockerfile`, `compose`, `ci`, `deploy_config` | Engineering artefacts present at the final state (1/0). A test file lies in a `test`, `tests` or `__tests__` folder or is named like `test_*.py`, `*_test.py`, `*_test.go` or `*.test.ts` / `*.spec.js` |
 | `test_functions` | A test file in Python, JavaScript, TypeScript or Go defines a test (`def test_…`, `class Test…`, `it(`, `test(`, `describe(` or `func Test…`) (1/0) |
 | `gitignore_covers_env`, `env_example`, `node_modules_committed`, `virtualenv_committed`, `pycache_committed` | Repository hygiene (1/0) |
-| `agents_md`, `claude_md`, `gemini_md`, `cursor_rules`, `copilot_instructions`, `other_agent_rules` | Agent context files (1/0) |
+| `agents_md`, `claude_md`, `gemini_md`, `cursor_rules`, `copilot_instructions`, `other_agent_rules` | Agent context files outside vendored folders (1/0). `agents_md` and `claude_md` leave out the files Next.js writes itself: an AGENTS.md holding only its managed block, and a CLAUDE.md holding only `@AGENTS.md` next to such a block |
+| `nextjs_agent_files` | An AGENTS.md with the Next.js managed block is present (1/0) |
 | `agent_branch_kinds` | Agents named at the start of branch names |
 | `signed_commits_<kind>` | Commits with an agent signature (co-author trailer, "generated with" line or agent service account), by agent. `bot` means a generic bot account, such as the organisers' application, and is not an agent |
 | `named_commits_<kind>` | Commits whose author or committer is named exactly after the tool (for example "Codex"), with no other signature |

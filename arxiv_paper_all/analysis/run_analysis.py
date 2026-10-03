@@ -337,6 +337,16 @@ pd.DataFrame({"agents_md": cx["file"], "branch": cx["branch"], "signature": cx["
     .value_counts().rename("repos").reset_index().to_csv(TABLES / "codex_trace_combinations.csv", index=False)
 codex_any, claude_any = cx["any"], cl["any"]
 T["codex_file_only"] = prop((cx["file"] & ~cx["specific"]).sum(), NA)
+# Context files that Next.js wrote, or that sit in vendored folders, are not counted (src/extract_stack.py).
+# Report how many there were and what the shares would have been with them.
+agents_any_path, claude_any_path = (s.agents_md_any_path == 1).values, (s.claude_md_any_path == 1).values
+T["context_excluded"] = {
+    "nextjs": prop((s.nextjs_agent_files == 1).sum(), NA),
+    "agents_any_path": prop(agents_any_path.sum(), NA), "claude_any_path": prop(claude_any_path.sum(), NA),
+    "agents_dropped": int((agents_any_path & ~cx["file"]).sum()), "claude_dropped": int((claude_any_path & ~cl["file"]).sum()),
+    "codex_any_with_them": prop((cx["specific"] | agents_any_path).sum(), NA),
+    "claude_any_with_them": prop((cl["any"] | claude_any_path).sum(), NA),
+}
 T["agents_md_with_claude"] = prop((cx["file"] & claude_any).sum(), claude_any.sum())
 T["agents_md_without_claude"] = prop((cx["file"] & ~claude_any).sum(), (~claude_any).sum())
 T["any_tool"] = prop(any_tool.sum(), NA)

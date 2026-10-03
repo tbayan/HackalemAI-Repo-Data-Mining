@@ -2,19 +2,19 @@ cff-version: 1.2.0
 message: "If you use this dataset or code, please cite it as below."
 type: dataset
 title: "HackAlem AI repository study: pseudonymised data and code"
-version: v1.0.2
-date-released: 2026-09-28
+version: v1.0.5
+date-released: 2026-10-03
 authors:
   - family-names: Bayan
     given-names: Talgar
     affiliation: "School of Computing and Artificial Intelligence (SCAI), Nazarbayev University; University of Manchester"
 repository-code: "https://github.com/tbayan/HackalemAI-Repo-Data-Mining"
-doi: 10.5281/zenodo.23020982  # all versions on Zenodo; v1.0.2 is 10.5281/zenodo.23021335
+doi: 10.5281/zenodo.23020982  # all versions on Zenodo (concept DOI)
 license: CC-BY-4.0
 abstract: >-
   Pseudonymised dataset, analysis pipeline and paper sources for the study
-  "Measuring AI Coding Agent Use from Repository Traces: Evidence from a
-  Hackathon Where Codex Was Required", based on the 3,649 organiser-created
+  "Agentic AI Under a Five-Hour Deadline: Traces of Coding Agents in 3,649
+  Hackathon Repositories", based on the 3,649 organiser-created
   repositories of the HackAlem AI hackathon (Astana, 23 September 2026).
   Credential findings are included only as aggregates. The analysis of the
   jury's decisions is pre-registered at https://osf.io/bm3je.
