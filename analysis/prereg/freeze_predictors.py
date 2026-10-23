@@ -6,7 +6,7 @@ data/prereg/jury_predictors.csv, and prints its SHA-256. The hash goes into the 
 so anyone can later check that the predictors were fixed before the winners were announced.
 
 Only the hash and aggregate counts are public; the table itself contains repository names.
-Usage: python arxiv_paper_all/prereg/freeze_predictors.py
+Usage: python analysis/prereg/freeze_predictors.py
 """
 from __future__ import annotations
 

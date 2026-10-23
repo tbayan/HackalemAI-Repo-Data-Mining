@@ -26,7 +26,7 @@ import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
-PAPER = ROOT / "arxiv_paper_all"
+ANALYSIS = ROOT / "analysis"
 OUT = ROOT / "public_data_generated"
 ID_MAP = DATA / "public_id_map.csv"
 TZ = timezone(timedelta(hours=5))
@@ -144,8 +144,8 @@ def main() -> None:
     agg.mkdir(exist_ok=True)
     for name in ["timeline_10min.csv", "last_hour_share.csv", "tracks.csv", "tool_traces.csv",
                  "codex_trace_combinations.csv", "frameworks.csv"]:
-        shutil.copy(PAPER / "tables" / name, agg / name)
-    facts = json.loads((PAPER / "analysis" / "facts_paper.json").read_text())
+        shutil.copy(ANALYSIS / "tables" / name, agg / name)
+    facts = json.loads((ANALYSIS / "facts_paper.json").read_text())
     (agg / "credentials_aggregate.json").write_text(json.dumps(facts["rq4"], indent=2), encoding="utf-8")
 
     with (OUT / "recollection.csv").open("w", newline="", encoding="utf-8") as f:

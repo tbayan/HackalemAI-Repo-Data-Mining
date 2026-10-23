@@ -33,11 +33,12 @@ from statsmodels.stats.contingency_tables import StratifiedTable
 from statsmodels.stats.multitest import multipletests
 from statsmodels.stats.proportion import proportion_confint
 
-PAPER = Path(__file__).resolve().parent.parent
-ROOT = PAPER.parent
+HERE = Path(__file__).resolve().parent          # analysis/ (public artefact)
+ROOT = HERE.parent
 DATA = ROOT / "data"
-TABLES = PAPER / "tables"
-OUT = PAPER / "analysis" / "facts_paper.json"
+TABLES = HERE / "tables"
+OUT = HERE / "facts_paper.json"
+LITERATURE = ROOT / "arxiv_paper_all" / "literature"  # private paper folder; optional
 sys.path.insert(0, str(ROOT / "src"))
 from plot_bilingual_charts import CASE_FIXES, CASES  # noqa: E402
 import solution_similarity as ss  # noqa: E402
@@ -648,7 +649,7 @@ old = pd.read_csv(DATA / "hackalem_repos_analysis.csv")
 fixed16 = set(json.loads((DATA / "verification" / "template_counted.json").read_text()))
 old.loc[old.repo.isin(fixed16), "participant_commits"] -= 1
 cmp_ = repos.merge(old, on="repo")
-recount = json.loads((PAPER / "checks" / "recompute_core_result.json").read_text())
+recount = json.loads((HERE / "checks" / "recompute_core_result.json").read_text())
 V: dict = {"clone_api_agree": int(sum(clone[n] == api[n] for n in repos.repo)),
            "template_found": int(repos.template_found.sum()), "history_rewritten": int(N - repos.template_found.sum()),
            "template_audit_n": len(json.loads((DATA / "verification" / "template_check.json").read_text())),
@@ -703,8 +704,9 @@ V["archive_wave"] = {"n": len(upd_wave), "first": upd_wave.min().strftime("%H:%M
                      "all_archived": int(meta.archived.astype(str).str.lower().eq("true").sum())}
 F["validation"] = V
 F["tracks_count"] = len(CASES)
-F["literature"] = {"searches": len(pd.read_csv(PAPER / "literature" / "search_log.csv")),
-                   "screened": len(pd.read_csv(PAPER / "literature" / "screening.csv"))}
+if (LITERATURE / "search_log.csv").exists():  # counts of the literature search, kept with the paper sources
+    F["literature"] = {"searches": len(pd.read_csv(LITERATURE / "search_log.csv")),
+                       "screened": len(pd.read_csv(LITERATURE / "screening.csv"))}
 
 OUT.write_text(to_json(F), encoding="utf-8")
 print(f"wrote {OUT.relative_to(ROOT)} ({len(json.dumps(F))} bytes)")

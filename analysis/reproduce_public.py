@@ -3,7 +3,7 @@
 Anyone can run this without the private clones or files. It recomputes RQ1-RQ3 headline numbers
 from repositories.csv and commits.csv and compares each with analysis/facts_paper.json.
 RQ4 (credentials) is released only as aggregates, so it is not recomputed here.
-Usage: python arxiv_paper_all/analysis/reproduce_public.py
+Usage: python analysis/reproduce_public.py
 """
 from __future__ import annotations
 
@@ -16,8 +16,8 @@ from pathlib import Path
 import pandas as pd
 from scipy import stats
 
-PAPER = Path(__file__).resolve().parent.parent
-PUB = PAPER.parent / "public_data_generated"
+HERE = Path(__file__).resolve().parent
+PUB = HERE.parent / "public_data_generated"
 
 
 def rhu(x, places: int = 1) -> float:
@@ -40,7 +40,7 @@ def haldane_or(said, trace) -> float:
 
 
 def main() -> int:
-    F = json.loads((PAPER / "analysis" / "facts_paper.json").read_text())
+    F = json.loads((HERE / "facts_paper.json").read_text())
     r = pd.read_csv(PUB / "repositories.csv", dtype={"track": str})
     c = pd.read_csv(PUB / "commits.csv")
     act = r[r.active == 1]

@@ -5,7 +5,7 @@ Derived, pseudonymised data for the paper *Agentic AI Under a Five-Hour Deadline
 - **Source:** the 3,649 public GitHub repositories that the organisers of HackAlem AI (Astana, 23 September 2026) created in the organisation `BAITC-Hacks`. All of them were archived when collected.
 - **Collected:** 24 September 2026, through the GitHub REST and GraphQL APIs and full mirror clones.
 - **Licence:** CC BY 4.0 for this derived data. No source code, README text or commit message is redistributed.
-- **Citation:** Bayan, T. (2026). *HackAlem AI repository study: pseudonymised data and code* (v1.0.4). Zenodo. https://doi.org/10.5281/zenodo.23091476
+- **Citation:** Bayan, T. (2026). *HackAlem AI repository study: pseudonymised data and code* (v1.0.5). Zenodo. https://doi.org/10.5281/zenodo.23120124
 
 ## Files
 
@@ -84,7 +84,7 @@ One row per team commit (all branches, counted once, template commit excluded).
 | `author` | Author as an ordinal within the repository (1, 2, …), from a salted hash |
 | `author_is_bot` | Author is a bot account (1/0) |
 
-The paper (Section 3, "Data collection and definitions" and "Measures") gives the exact definitions. Its code is in `src/` and `arxiv_paper_all/analysis/`.
+The paper (Section 3, "Data collection and definitions" and "Measures") gives the exact definitions. Its code is in `src/` and `analysis/`.
 
 ## Privacy and ethics
 
@@ -96,7 +96,7 @@ The paper (Section 3, "Data collection and definitions" and "Measures") gives th
 
 ## Reproducing the paper
 
-`python arxiv_paper_all/analysis/reproduce_public.py` recomputes the headline numbers on participation, work timing, agent traces, README naming and artefacts from these files alone and compares them with the paper (42 of 42 match in this release). The full pipeline, which needs the clones, is `src/` followed by `arxiv_paper_all/analysis/run_analysis.py`. The figures are drawn by `arxiv_paper_all/figure_code/make_figures.py` from the paper's facts file and the tables in `aggregates/`, not from the record-level files.
+`python analysis/reproduce_public.py` recomputes the headline numbers on participation, work timing, agent traces, README naming and artefacts from these files alone and compares them with the paper (42 of 42 match in this release). The full pipeline, which needs the clones, is `src/` followed by `analysis/checks/recompute_core.py` and `analysis/run_analysis.py`, which writes every reported statistic to `analysis/facts_paper.json` and the tables to `analysis/tables/`. The paper's figures are drawn from that facts file and those tables, not from the record-level files.
 
 Some numbers in the paper cannot be recomputed from these files:
 
@@ -105,6 +105,7 @@ Some numbers in the paper cannot be recomputed from these files:
 - the validation checks against the GitHub API, the separate recount and the template audit (Table 2), apart from the window shifts and author time;
 - the README-language validation sample and its labels;
 - the similarity of dependency sets between solutions (full dependency lists are not released; `frameworks` and `llm_sdks` hold the main ones).
+- the pre-registered analysis of the jury's awards (RQ5): `analysis/prereg/match_awards.py` links the official award list to repositories and `analysis/prereg/jury_analysis.py` runs the registered tests; their inputs, which link teams to repositories, are not released, as the registration (`analysis/prereg/jury_preregistration.md`, OSF https://osf.io/bm3je) specifies, and the aggregate results are in `analysis/prereg/jury_results.json`.
 
 ## Known limitations
 
