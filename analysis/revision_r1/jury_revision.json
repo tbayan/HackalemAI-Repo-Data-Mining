@@ -1,0 +1,164 @@
+{
+ "restricted": {
+  "rule": "team commit in 17:00-18:00 and a written README with run or setup instructions",
+  "n": 929,
+  "awarded": 35,
+  "other": 894,
+  "awarded_all_meet_rule": true,
+  "removed": 55,
+  "primary": [
+   {
+    "hypothesis": "H1",
+    "variable": "window_commits",
+    "p": 9.999000099990002e-05,
+    "p_holm": 0.0008999100089991002,
+    "awarded_median": 36.0,
+    "other_median": 19.5,
+    "awarded_mean": 58.8,
+    "other_mean": 29.317673378076062,
+    "delta": 0.5324523902059852,
+    "lo": 0.4049747376603187,
+    "hi": 0.6634279051690634
+   },
+   {
+    "hypothesis": "H2",
+    "variable": "deployed_link",
+    "p": 0.35196480351964804,
+    "p_holm": 1.0,
+    "awarded_median": 0.0,
+    "other_median": 0.0,
+    "awarded_mean": 0.08571428571428572,
+    "other_mean": 0.087248322147651,
+    "or": 1.0413153003973452,
+    "lo": 0.3003208571565935,
+    "hi": 3.6105968966258555
+   },
+   {
+    "hypothesis": "H3",
+    "variable": "tests",
+    "p": 0.09779022097790221,
+    "p_holm": 0.5867413258674132,
+    "awarded_median": 1.0,
+    "other_median": 1.0,
+    "awarded_mean": 0.8285714285714286,
+    "other_mean": 0.912751677852349,
+    "or": 0.48885255676186806,
+    "lo": 0.1945465111049971,
+    "hi": 1.2283788637239514
+   },
+   {
+    "hypothesis": "H3",
+    "variable": "dockerfile",
+    "p": 0.33626637336266374,
+    "p_holm": 1.0,
+    "awarded_median": 0.0,
+    "other_median": 0.0,
+    "awarded_mean": 0.45714285714285713,
+    "other_mean": 0.34451901565995524,
+    "or": 1.4490221035885753,
+    "lo": 0.7250204964273168,
+    "hi": 2.8960078605153634
+   },
+   {
+    "hypothesis": "H3",
+    "variable": "readme_words",
+    "p": 0.0005999400059994001,
+    "p_holm": 0.0047995200479952005,
+    "awarded_median": 2265.0,
+    "other_median": 1700.5,
+    "awarded_mean": 2468.657142857143,
+    "other_mean": 1921.7080536912752,
+    "delta": 0.3622230858919549,
+    "lo": 0.2118150019432569,
+    "hi": 0.5064127477652546
+   },
+   {
+    "hypothesis": "H4",
+    "variable": "agents_md",
+    "p": 0.024197580241975804,
+    "p_holm": 0.16938306169383063,
+    "awarded_median": 1.0,
+    "other_median": 0.0,
+    "awarded_mean": 0.5428571428571428,
+    "other_mean": 0.3478747203579418,
+    "or": 2.210681449671788,
+    "lo": 1.1187997364163438,
+    "hi": 4.368174493477262
+   },
+   {
+    "hypothesis": "H4",
+    "variable": "agent_signed",
+    "p": 0.33596640335966405,
+    "p_holm": 1.0,
+    "awarded_median": 0.0,
+    "other_median": 0.0,
+    "awarded_mean": 0.3142857142857143,
+    "other_mean": 0.232662192393736,
+    "or": 1.39801510297853,
+    "lo": 0.6625996125719888,
+    "hi": 2.949664006849577
+   },
+   {
+    "hypothesis": "H4",
+    "variable": "codex_branch",
+    "p": 0.8316168383161684,
+    "p_holm": 1.0,
+    "awarded_median": 0.0,
+    "other_median": 0.0,
+    "awarded_mean": 0.2,
+    "other_mean": 0.19574944071588368,
+    "or": 1.0002448134008037,
+    "lo": 0.43100254313376446,
+    "hi": 2.321308081991294
+   },
+   {
+    "hypothesis": "H5",
+    "variable": "last_hour_share",
+    "p": 0.2883711628837116,
+    "p_holm": 1.0,
+    "awarded_median": 0.2857,
+    "other_median": 0.3114,
+    "awarded_mean": 0.3044542857142857,
+    "other_mean": 0.3434796420581655,
+    "delta": -0.156237854644384,
+    "lo": -0.3058686358336572,
+    "hi": -0.012815779246016465
+   }
+  ]
+ },
+ "h1_start_moved": {
+  "12:00": {
+   "n": 984,
+   "awarded": 35,
+   "delta": 0.5471836137527433,
+   "lo": 0.4217264081931236,
+   "hi": 0.668983174835406,
+   "p": 9.999000099990002e-05,
+   "p_holm": 0.0008999100089991002,
+   "awarded_median": 38.0,
+   "other_median": 19.0
+  },
+  "12:30": {
+   "n": 984,
+   "awarded": 35,
+   "delta": 0.5479151426481346,
+   "lo": 0.423180321872714,
+   "hi": 0.668983174835406,
+   "p": 9.999000099990002e-05,
+   "p_holm": 0.0008999100089991002,
+   "awarded_median": 37.0,
+   "other_median": 19.0
+  },
+  "13:30": {
+   "n": 984,
+   "awarded": 35,
+   "delta": 0.541697147037308,
+   "lo": 0.4173372348207754,
+   "hi": 0.6620427944403803,
+   "p": 9.999000099990002e-05,
+   "p_holm": 0.0008999100089991002,
+   "awarded_median": 36.0,
+   "other_median": 19.0
+  }
+ }
+}
