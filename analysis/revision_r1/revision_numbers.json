@@ -1,0 +1,166 @@
+{
+ "window": {
+  "hour_before_start": 186,
+  "first_hour": 1751,
+  "last_hour": 8755,
+  "hour_after_end": 235,
+  "ten_min_before_end": 1321,
+  "ten_min_after_end": 106,
+  "start_moved_end_fixed": {
+   "12:00": {
+    "active": 1058,
+    "window_commits": 30604,
+    "codex_specific_pct": 21.6,
+    "median_last_hour_share": 30.2,
+    "majority_last_hour_pct": 14.9
+   },
+   "12:30": {
+    "active": 1058,
+    "window_commits": 30508,
+    "codex_specific_pct": 21.6,
+    "median_last_hour_share": 30.3,
+    "majority_last_hour_pct": 15.1
+   },
+   "13:00": {
+    "active": 1057,
+    "window_commits": 30418,
+    "codex_specific_pct": 21.7,
+    "median_last_hour_share": 30.8,
+    "majority_last_hour_pct": 15.4
+   },
+   "13:30": {
+    "active": 1057,
+    "window_commits": 30110,
+    "codex_specific_pct": 21.7,
+    "median_last_hour_share": 30.8,
+    "majority_last_hour_pct": 15.4
+   },
+   "14:00": {
+    "active": 1056,
+    "window_commits": 28667,
+    "codex_specific_pct": 21.7,
+    "median_last_hour_share": 32.7,
+    "majority_last_hour_pct": 16.8
+   }
+  },
+  "whole_window_shifted": {
+   "-60": {
+    "active": 1026,
+    "window_commits": 21849,
+    "codex_specific_pct": 22.3,
+    "median_last_hour_share": 33.3,
+    "majority_last_hour_pct": 14.6
+   },
+   "-30": {
+    "active": 1040,
+    "window_commits": 26013,
+    "codex_specific_pct": 22.0,
+    "median_last_hour_share": 29.0,
+    "majority_last_hour_pct": 12.5
+   },
+   "+30": {
+    "active": 1060,
+    "window_commits": 30341,
+    "codex_specific_pct": 21.6,
+    "median_last_hour_share": 15.4,
+    "majority_last_hour_pct": 6.1
+   },
+   "+60": {
+    "active": 1059,
+    "window_commits": 28902,
+    "codex_specific_pct": 21.6,
+    "median_last_hour_share": 0.0,
+    "majority_last_hour_pct": 0.4
+   }
+  },
+  "codex_specific_range_all_shifts": [
+   21.6,
+   22.3
+  ]
+ },
+ "batch": {
+  "n": 1040,
+  "first": "18:43",
+  "last": "19:58",
+  "minutes_with_creations": 76,
+  "median_per_minute": 14,
+  "max_per_minute": 15,
+  "organic_max_per_minute": 8,
+  "names_used_before": 1,
+  "active": 14,
+  "prearchived": 0
+ },
+ "registration": {
+  "created_after_sep19": 1530,
+  "created_after_sep19_not_batch": 490,
+  "created_on_sep21": 312,
+  "created_on_sep21_prearchived": 242
+ },
+ "levels": {
+  "names_repeated": 224,
+  "repos_in_repeated": 480,
+  "groups_exactly_one_active": 146,
+  "groups_none_active": 75,
+  "groups_several_active": 3,
+  "generic_team_repos": 104
+ },
+ "traces": {
+  "active_not_batch": 1043,
+  "codex_specific_pct": 21.9,
+  "codex_any_pct": 42.5,
+  "claude_pct": 20.4,
+  "claude_and_codex_specific": {
+   "n": 52,
+   "of": 1057,
+   "pct": 4.9,
+   "lo": 3.8,
+   "hi": 6.4
+  }
+ },
+ "readme": {
+  "changed_by_signed_commit": {
+   "n": 164,
+   "of": 1033,
+   "pct": 15.9,
+   "lo": 13.8,
+   "hi": 18.2
+  },
+  "changed_by_signed_or_named": {
+   "n": 187,
+   "of": 1033,
+   "pct": 18.1,
+   "lo": 15.9,
+   "hi": 20.6
+  },
+  "signed_by_kind": {
+   "claude": 147,
+   "codex": 14,
+   "cursor": 11,
+   "copilot": 3
+  },
+  "words_any_trace": {
+   "n": 540,
+   "median": 1807.5
+  },
+  "words_no_trace": {
+   "n": 493,
+   "median": 1478
+  },
+  "words_delta": 0.22,
+  "words_p": 8.187362046011842e-10,
+  "second_route_count": 164
+ },
+ "collab": {
+  "signed_window_commits_pct": 11.6,
+  "pr_refs_with_codex_branch": 141,
+  "agents_md_repos": 300,
+  "codex_named_readme": 120,
+  "specific_given_named": {
+   "n": 39,
+   "of": 120,
+   "pct": 32.5,
+   "lo": 24.8,
+   "hi": 41.3
+  }
+ }
+}
