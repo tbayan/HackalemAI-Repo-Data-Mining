@@ -1,4 +1,4 @@
-"""Revision R1 (Reviewer 3, comment 3): companion file for the blind hand coding.
+"""Check of the LLM-coded approaches: companion file for the blind coding.
 
 For each of the 60 sampled repositories, writes the full cleaned README (the same cleaning as the model's input,
 but not cut at 2,500 characters), the brief and the full file list to one HTML page, ordered by item number.

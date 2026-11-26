@@ -1,13 +1,13 @@
-"""Revision R1: two exploratory checks of the registered jury analysis -> jury_revision.json (aggregates only).
+"""Two exploratory checks of the registered jury analysis -> jury_revision.json (aggregates only).
 
 Calls the registered code (analysis/prereg/jury_analysis.py) unchanged; its load() checks the hash of the frozen
 predictor table. The base case must reproduce analysis/prereg/jury_results.json before anything else is reported.
 
-1. Restricted comparison (Reviewer 1, comment 3): submission to the jury is not observable, so the comparison is
+1. Restricted comparison: submission to the jury is not observable, so the comparison is
    repeated among repositories that look like a finished submission: at least one team commit in the last hour of
    the window and a written README with run or setup instructions. The rule is applied to awarded and other
    repositories alike.
-2. Window start (Reviewer 2, comment 2): H1 with window commits counted from 12:00, 12:30 or 13:30 (end 18:00).
+2. Window start: H1 with window commits counted from 12:00, 12:30 or 13:30 (end 18:00).
 
     python jury_revision.py <repository root>
 """

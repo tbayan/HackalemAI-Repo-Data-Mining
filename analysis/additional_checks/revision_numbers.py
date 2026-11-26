@@ -1,4 +1,4 @@
-"""Revision R1: every new number used in the revised manuscript -> revision_numbers.json (aggregates only).
+"""Additional checks of the HackAlem AI repositories -> revision_numbers.json (aggregates only).
 
 Separate code path from analysis/run_analysis.py. Each block first reproduces a published value (assert),
 then computes the new quantity. Inputs are the private files in data/ and the clones.

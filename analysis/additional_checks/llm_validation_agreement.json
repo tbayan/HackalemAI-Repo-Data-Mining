@@ -1,0 +1,104 @@
+{
+ "n": 60,
+ "model_vs_final": {
+  "core_method": {
+   "agreement": {
+    "n": 45,
+    "of": 60,
+    "pct": 75.0,
+    "lo": 62.8,
+    "hi": 84.2
+   },
+   "kappa": 0.65,
+   "kappa_lo": 0.49,
+   "kappa_hi": 0.79,
+   "weighted_agreement_pct": 75.9
+  },
+  "llm_role": {
+   "agreement": {
+    "n": 51,
+    "of": 60,
+    "pct": 85.0,
+    "lo": 73.9,
+    "hi": 91.9
+   },
+   "kappa": 0.77,
+   "kappa_lo": 0.62,
+   "kappa_hi": 0.9,
+   "weighted_agreement_pct": 85.1
+  },
+  "pattern": {
+   "agreement": {
+    "n": 48,
+    "of": 60,
+    "pct": 80.0,
+    "lo": 68.2,
+    "hi": 88.2
+   },
+   "kappa": 0.7,
+   "kappa_lo": 0.55,
+   "kappa_hi": 0.84,
+   "weighted_agreement_pct": 78.8
+  },
+  "confusion_core_model_by_final": {
+   "algorithm|algorithm": 23,
+   "ml_model|ml_model": 4,
+   "llm_agent|llm_agent": 9,
+   "llm_agent|algorithm": 1,
+   "llm_prompt|llm_prompt": 9,
+   "llm_agent|llm_prompt": 3,
+   "algorithm|llm_agent": 4,
+   "ml_model|algorithm": 1,
+   "llm_agent|unclear": 1,
+   "llm_prompt|llm_agent": 1,
+   "pretrained|llm_prompt": 1,
+   "unclear|llm_prompt": 2,
+   "llm_agent|ml_model": 1
+  },
+  "confusion_role_model_by_final": {
+   "none|none": 10,
+   "support|support": 19,
+   "core|core": 22,
+   "core|support": 2,
+   "support|core": 3,
+   "core|unclear": 1,
+   "unclear|core": 2,
+   "support|none": 1
+  }
+ },
+ "coders_before_adjudication": {
+  "items": 53,
+  "core_method": {
+   "agreement": {
+    "n": 20,
+    "of": 53,
+    "pct": 37.7,
+    "lo": 25.9,
+    "hi": 51.2
+   },
+   "kappa": 0.2,
+   "kappa_lo": 0.07,
+   "kappa_hi": 0.35,
+   "weighted_agreement_pct": 38.2
+  },
+  "llm_role": {
+   "agreement": {
+    "n": 22,
+    "of": 53,
+    "pct": 41.5,
+    "lo": 29.3,
+    "hi": 54.9
+   },
+   "kappa": 0.04,
+   "kappa_lo": -0.01,
+   "kappa_hi": 0.13,
+   "weighted_agreement_pct": 37.8
+  }
+ },
+ "adjudication": {
+  "disputed": 47,
+  "as_author_first": 1,
+  "as_second": 42,
+  "other": 4
+ }
+}

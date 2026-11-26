@@ -1,4 +1,4 @@
-"""Revision R1 (Reviewer 3, comment 3): blind hand-coding sample for the LLM-coded approaches.
+"""Check of the LLM-coded approaches: blind coding sample.
 
 Draws 5 repositories per track at random (fixed seed) from the 984 coded repositories, leaving out the
 48 pilot repositories on which the codebook was tried, and writes
@@ -70,7 +70,7 @@ wb = Workbook()
 ins = wb.active
 ins.title = "Instructions"
 text = [
-    "Hand-coding of team approaches (blind check of the LLM coding, Reviewer 3)",
+    "Coding of team approaches (blind check of the LLM coding)",
     "",
     "For each row of the sheet 'Label', read the brief, the README excerpt and the file list, and choose:",
     "  core_method: how the main task of the brief is solved",
